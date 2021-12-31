@@ -1,32 +1,63 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+  <v-app
+  id="app">
+    <formcomunication v-if="!server"/>
+
+    
+
+  </v-app>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
+import { mapGetters } from 'vuex';
+import Base from './components/WorkSpace/Space.vue';
+import BarsdAndDrawer from './components/Layout/BarsAndDrawer.vue';
+import Main from "./components/File System/JileMain.vue"
+import login from "./components/login.vue"
 
-#nav {
-  padding: 30px;
+export default {
+  name: 'App',
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+  components: {
+    Base,
+    Layout: BarsdAndDrawer,
+    FileSystem: Main,
+    formcomunication:login
+  },
 
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+  data: () => ({    
+    SelectedWS:-1,
+    exploring:false
+  }),
+
+  computed: {
+    ...mapGetters([
+      'WKs','server'
+  ])},
+
+  methods:{
+
+    tabchanged(index){
+      this.SelectedWS = index
+    },
+    
+
+  },
+
+  created(){
+    // console.log(this.$store.w)
   }
+
 }
+</script>
+
+<style >
+  html{
+    overflow: hidden!important;;
+  }
+  .Background{    
+    overflow: hidden;
+    height:100vh;
+  }
+  
 </style>
