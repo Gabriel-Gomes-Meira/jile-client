@@ -7,8 +7,6 @@ Vue.use(Vuex)
 export default new Vuex.Store({
 	state: {
 		Handler,
-		// contentsPresets:{},		
-		// MarkdowerTexts:[],
 		defaultSizes:{
 			Player:{
 				w:50,
@@ -22,7 +20,7 @@ export default new Vuex.Store({
 				w:30,
 				h:32
 			},		
-		},   
+		},
 		availbleThemes:{
 			darkblue:{
 				l1: '#000842',
@@ -31,7 +29,7 @@ export default new Vuex.Store({
 				l4: '#008AB3',
 				l5: '#00B6BC',
 				l6: '#00E1B9',  
-					
+				i1: '#ABD1FF',
 			},
 			vinne:{
 				l1: '#4C082D',
@@ -40,6 +38,7 @@ export default new Vuex.Store({
 				l4: '#B51369',
 				l5: '#E92C91',
 				l6: '#F073B6',
+				i1: '#F7B3D7'
 			},
 			darkgreen:{
 				l1: '#23462C',
@@ -48,6 +47,7 @@ export default new Vuex.Store({
 				l4: '#4D9960',
 				l5: '#73B985',
 				l6: '#A2D0AE',
+				i1: '#CBE5D1',
 			},
 			gray:{
 				l1: '#2B3A41',
@@ -56,6 +56,7 @@ export default new Vuex.Store({
 				l4: '#5D7E8E',
 				l5: '#829FAD',
 				l6: '#ACBFC9',
+				i1: "#D0DBE0",
 			},
 			darkyellow:{
 				l1: '#493D00',
@@ -64,6 +65,7 @@ export default new Vuex.Store({
 				l4: '#FFDB24',
 				l5: '#FFE45B',
 				l6: '#FFED92',
+				i1: '#FFF1A9',
 			},
 			darkambar:{
 				l1: '#723100',
@@ -72,6 +74,7 @@ export default new Vuex.Store({
 				l4: '#F36900',
 				l5: '#FF8E37',
 				l6: '#FFB37A',
+				i1: '#FFD4B4'
 			},
 			darkred:{
 				l1: '#510D0D',
@@ -80,15 +83,18 @@ export default new Vuex.Store({
 				l4: '#B81D1D',
 				l5: '#E13E3E',
 				l6: '#EB7E7E',
-			},
-			current:'darkblue'
-		},
-		serverConnected:""
+				i1: '#F4B8B8'
+			},			
+		},   
+		AppState:{
+			serverConnected:"",	
+			currenttheme:'darkblue'		
+		}
 	},
 
   	mutations: {
 
-		initWorkSpaces(){            
+		recoverWorkSpaces(){            
 			var savedworkstate = JSON.parse(localStorage.getItem('workspaces'));    
 
 			if(savedworkstate) {                  
@@ -96,101 +102,67 @@ export default new Vuex.Store({
 			}                  
 		},
 
-		recoverTheme(){
-			var storagedTheme = JSON.parse(localStorage.getItem('currenttheme'))
+		// recoverTheme(){
+		// 	var storagedTheme = JSON.parse(localStorage.getItem('currenttheme'))
 
-			if(storagedTheme) {
-				this.state.availbleThemes.current = storagedTheme;
-			}          
-		},
-
-		// getContent(){
-		// 	var presets = JSON.parse(localStorage.getItem('contentspresets'))
-
-		// 	if(presets) {
-		// 		this.state.contentsPresets = presets
-		// 	}
+		// 	if(storagedTheme) {
+		// 		this.state.availbleThemes.current = storagedTheme;
+		// 	}          
 		// },
 
+		recoverAppState(state){
+
+			for (const key in state.AppState) {
+				var item = localStorage.getItem(`jc_${key}`)
+				if(item) {
+					state.AppState[key] = item
+				}
+			}
+		},
+		
 		saveWorkSpaces(state){      
 			localStorage.setItem('workspaces', JSON.stringify(state.Handler.wks))
-			localStorage.setItem('currenttheme', JSON.stringify(state.availbleThemes.current))
+			// localStorage.setItem('currenttheme', JSON.stringify(state.availbleThemes.current))
 		},
-
+		
 		alterTheme(state, name){
 			state.availbleThemes.current = name;
 		},
-
-		// setContent(state){
-		// 	localStorage.setItem('contentspresets', JSON.stringify(state.contentsPresets))           
-		// },   
-
-		// deleteContent(state, cellid){      
-		// 	delete state.contentsPresets[cellid]      
-		// },
-
-		saveTexts(state){
-			// 'use strict';
-			// const fs = require('fs');									
-			// fs.writeFileSync('MarkdowerTexts.json', JSON.stringify(state.MarkdowerTexts));
-		},
-		loadTexts(state){
-			// 'use strict';
-			// const fs = require('fs');
-			// try {
-			// 	let rawdata = fs.readFileSync('MarkdowerTexts.json');
-			// 	state.MarkdowerTexts = JSON.parse(rawdata);							
-			// } catch (error) {
-			// 	console.log(error);
-			// }
-		}
+		
+		setAppState(state, data){
+			state.AppState[data[0]] = data[1]
+			localStorage.setItem(`jc_${data[0]}`, data[1])
+		}				
   	},
 
   	actions: {
 		loadState({ commit }) {
-			commit('initWorkSpaces')
-			commit('recoverTheme')    
-			// commit('getContent')        
+			commit('recoverAppState')       
+			// commit('recoverTheme')    
+			commit('recoverWorkSpaces')
 		},
 		
-		saveState({ commit }) {
-			commit('saveWorkSpaces')
-			return 'Salvo com sucesso!';
+		saveWorkState({ commit }) {
+			commit('saveWorkSpaces')	
+			return 'Estado dos Workspaces salvos!'		
 		},
-
-		// saveContent({ commit }) {
-		// 	commit('setContent');
+		
+		// changeTheme({ commit }, name) {
+		// 	commit('alterTheme', name)
+		// 	return 'Tema alterado para '+name;
 		// },
 
-		saveMarkdower({ commit }) {
-			commit('saveTexts')
-		},
-		loadMarkdower({ commit }) {
-			commit('loadTexts')
-		},
-
-		// deleteContent({ commit }, cell) {
-		// 	if(this.state.contentsPresets[cell.id]) {
-		// 		commit('deleteContent', cell.id)
-		// 		commit('setContent')
-		// 	}
-		// },
-
-		changeTheme({ commit }, name) {
-			commit('alterTheme', name)
-			return 'Tema alterado para '+name;
-		},
+		saveAppState({ commit }, data){
+			commit('setAppState', data)
+		}
 	},
 
-	modules: {
-	},
+	
 
   	getters: {
 		WKs: state => state.Handler,
 		defaultSizes: state => state.defaultSizes,
-		theme: state => state.availbleThemes[state.availbleThemes.current],
-		// contentsPresets: state => state.contentsPresets,
-		// Texts: state=>state.MarkdowerTexts,
-		server: state => state.serverConnected.length>0?`${state.serverConnected}:3000`:false
+		theme: state => state.availbleThemes[state.AppState.currenttheme],		
+		server: state => state.AppState.serverConnected.length>0?state.AppState.serverConnected:false
 	}
 })

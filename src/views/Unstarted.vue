@@ -1,8 +1,8 @@
 <template>
-  <v-container fluid fill-height>
-        <v-row class="align-center justify-center">
-            <v-card v-if="response.active">
-                <v-alert :class="response.hasError?'red':'success'" v-model="response.active" dismissible>
+    <v-container fluid fill-height>
+        <v-row class="align-center justify-center" v-if="!loading">
+            <v-card v-if="response.active" width="60%">
+                <v-alert :class="response.hasError?'red':'success'" v-model="response.active" dismissible class="text-center">
                     {{ response.hasError?'Não foi possível encontrar um servidor com o ip digitado!':'Conexão bem sucedida!' }}
                 </v-alert>
             </v-card>
@@ -22,9 +22,9 @@
                         v-model="address"
                     ></v-text-field>                
 
-                    <v-btn color="success" 
+                    <v-btn color="success" @click="tryHandShake"
                     fab small>
-                        <v-icon @click="tryHandshake"
+                        <v-icon 
                         color="">
                         mdi-connection
                         </v-icon>
@@ -32,28 +32,50 @@
                     </v-row>                
                 </v-container>              
                 </v-card-actions>
-          </v-card>
+        </v-card>
+        </v-row>
+
+        <v-row class="align-center justify-center" v-else>
+            <v-progress-circular 
+            indeterminate
+            color="green"
+            :size="200"
+            ></v-progress-circular>
         </v-row>
     </v-container>   
 </template>
 
 <script>
 import axios from "axios"
+import {mapGetters} from "vuex"
 export default {
+    computed:{
+        ...mapGetters([
+            'server'
+        ])
+    },
+
     data: () => ({        
         address:"",
         response:{
             active:false,
             hasError:false,
-        }
+        },
+        loading:false
     }),
 
     methods:{
-        tryHandshake(){
+        tryHandShake(){
+            
             axios.get(`http://${this.address}:3000/`).then(result => {
                 if(result.data.handshake){
                     this.response.active=true;
                     this.response.hasError=false;
+                    this.loading = true;
+                    this.$store.dispatch('saveAppState', ['serverConnected', `${this.address}:3000`])                    
+                    setTimeout(() => {
+                        this.$router.push('Work')
+                    }, 5000)
                 } else {
                     this.response.active=true;
                     this.response.hasError=true;
@@ -62,6 +84,12 @@ export default {
                 this.response.active=true;
                 this.response.hasError=true;
             })
+        }
+    },
+    
+    created(){
+        if(this.server){
+            this.$router.push('/explorer')
         }
     }
 }

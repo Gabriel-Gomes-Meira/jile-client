@@ -1,51 +1,44 @@
 <template>
-  <v-app
-  id="app">
-    <formcomunication v-if="!server"/>
-
+  <v-app id="app">   
     
-
+    <v-scroll-x-transition v-if="$router.history.current.name=='Work'">
+      <router-view/>
+    </v-scroll-x-transition>
+    <v-scroll-x-reverse-transition v-else-if="$router.history.current.name=='Explorer'">
+      <router-view/>
+    </v-scroll-x-reverse-transition>
+    <router-view v-else/> 
+    
+    
   </v-app>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
-import Base from './components/WorkSpace/Space.vue';
-import BarsdAndDrawer from './components/Layout/BarsAndDrawer.vue';
-import Main from "./components/File System/JileMain.vue"
-import login from "./components/login.vue"
 
 export default {
   name: 'App',
 
-  components: {
-    Base,
-    Layout: BarsdAndDrawer,
-    FileSystem: Main,
-    formcomunication:login
+  components: { 
+    transitionName:"bounce"   
   },
 
-  data: () => ({    
-    SelectedWS:-1,
-    exploring:false
+  data: () => ({        
   }),
 
   computed: {
     ...mapGetters([
-      'WKs','server'
+      'server'
   ])},
 
-  methods:{
-
-    tabchanged(index){
-      this.SelectedWS = index
-    },
-    
-
+  methods:{        
   },
 
-  created(){
-    // console.log(this.$store.w)
+  created(){    
+    if(this.server) {
+      this.$router.push('Work')
+    }    
+    
   }
 
 }
@@ -54,10 +47,5 @@ export default {
 <style >
   html{
     overflow: hidden!important;;
-  }
-  .Background{    
-    overflow: hidden;
-    height:100vh;
-  }
-  
+  }    
 </style>

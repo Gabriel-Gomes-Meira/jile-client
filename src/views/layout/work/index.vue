@@ -3,34 +3,35 @@
         
         <v-app-bar        
         dense class="l3 elevation-0">
-        <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+            <v-toolbar-title>{{Title}}</v-toolbar-title>
 
-        <v-tabs
-        v-model="SelectedTab"
-        align-with-title
-        right        
-        @change="$emit('tabchanged', SelectedTab)">
-            <v-tabs-slider color="l6"></v-tabs-slider>
+            <v-tabs
+            v-model="SelectedTab"
+            align-with-title
+            right        
+            @change="$emit('tabchanged', SelectedTab)">
+                <v-tabs-slider color="l6"></v-tabs-slider>
 
-            <v-tab
-            v-for="(Tab, index) in WKs.wks"
-            :key="'tab_'+index"        
-            @keydown="checkKey"            
-            >                                        
-            <template>            
-                <span class="white--text">
-                    {{ Tab.name }}
-                </span>
-            </template>      
-            </v-tab>
-        </v-tabs>
-        
-        <v-toolbar-title>{{Title}}</v-toolbar-title>
+                <v-tab
+                v-for="(Tab, index) in WKs.wks"
+                :key="'tab_'+index"        
+                @keydown="checkKey"            
+                >                                        
+                <template>            
+                    <span class="white--text">
+                        {{ Tab.name }}
+                    </span>
+                </template>      
+                </v-tab>
+            </v-tabs>
+            
+            <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>            
         </v-app-bar>
 
         
         <v-navigation-drawer v-model="drawer"
-        absolute temporary       
+        absolute temporary    
+        right   
         class="l3">
         <v-list nav
         dense>
@@ -108,7 +109,15 @@
                         </v-row>                    
                     </v-expansion-panel-content>
                 </v-expansion-panel>
-            </v-expansion-panels>                            
+            </v-expansion-panels>   
+
+            <v-list-item            
+            to="/Explorer">
+                <v-list-item-icon>
+                <v-icon>mdi-folder-table</v-icon>
+                </v-list-item-icon>
+                <v-list-item-title>Explorer</v-list-item-title>
+            </v-list-item>                         
 
             <v-list-item            
             @click="saveState">
@@ -158,14 +167,11 @@
 <script>
 import { mapGetters } from 'vuex';
 
-import FormDialog from '../workspace/FormDialog.vue';
-import ConfirmDialog from '../workspace/ConfirmDialog.vue';
-
-// IPC para comunicar com o systembar
-// import { ipcRenderer } from "electron"
+import FormDialog from './FormDialog.vue';
+import ConfirmDialog from './ConfirmDialog.vue';
 
 export default {
-    name:"Explorer-layout",
+    name:"Work-layout",
 
     props:['Title'],
 
@@ -232,14 +238,14 @@ export default {
         },
 
         saveState(){
-            this.$store.dispatch('saveState').then((message) =>{
+            this.$store.dispatch('saveWorkState').then((message) =>{
                 this.message = message
                 this.dialog.snack = true
             })
         },                
 
         changeTheme(value){
-            this.$store.dispatch('changeTheme', value).then(()=>{                            
+            this.$store.dispatch('saveAppState', ['currenttheme',value]).then(()=>{                            
                 for (const lay in this.theme) {  
                     // console.log(this.$vuetify)              
                     this.$vuetify.theme.themes.dark[lay] = this.theme[lay];
