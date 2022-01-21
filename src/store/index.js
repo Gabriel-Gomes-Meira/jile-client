@@ -88,7 +88,8 @@ export default new Vuex.Store({
 		},   
 		AppState:{
 			serverConnected:"",	
-			currenttheme:'darkblue'		
+			currenttheme:'darkblue',
+			toWorkspace:[]	
 		}
 	},
 
@@ -100,29 +101,20 @@ export default new Vuex.Store({
 			if(savedworkstate) {                  
 				Handler.wks = savedworkstate;  
 			}                  
-		},
-
-		// recoverTheme(){
-		// 	var storagedTheme = JSON.parse(localStorage.getItem('currenttheme'))
-
-		// 	if(storagedTheme) {
-		// 		this.state.availbleThemes.current = storagedTheme;
-		// 	}          
-		// },
+		},		
 
 		recoverAppState(state){
 
 			for (const key in state.AppState) {
 				var item = localStorage.getItem(`jc_${key}`)
-				if(item) {
-					state.AppState[key] = item
+				if(item) {					
+					state.AppState[key] = JSON.parse(item)
 				}
 			}
 		},
 		
 		saveWorkSpaces(state){      
-			localStorage.setItem('workspaces', JSON.stringify(state.Handler.wks))
-			// localStorage.setItem('currenttheme', JSON.stringify(state.availbleThemes.current))
+			localStorage.setItem('workspaces', JSON.stringify(state.Handler.wks))			
 		},
 		
 		alterTheme(state, name){
@@ -131,14 +123,14 @@ export default new Vuex.Store({
 		
 		setAppState(state, data){
 			state.AppState[data[0]] = data[1]
-			localStorage.setItem(`jc_${data[0]}`, data[1])
+			localStorage.setItem(`jc_${data[0]}`, 
+								JSON.stringify(data[1]))
 		}				
   	},
 
   	actions: {
 		loadState({ commit }) {
 			commit('recoverAppState')       
-			// commit('recoverTheme')    
 			commit('recoverWorkSpaces')
 		},
 		
@@ -146,11 +138,6 @@ export default new Vuex.Store({
 			commit('saveWorkSpaces')	
 			return 'Estado dos Workspaces salvos!'		
 		},
-		
-		// changeTheme({ commit }, name) {
-		// 	commit('alterTheme', name)
-		// 	return 'Tema alterado para '+name;
-		// },
 
 		saveAppState({ commit }, data){
 			commit('setAppState', data)
@@ -163,6 +150,7 @@ export default new Vuex.Store({
 		WKs: state => state.Handler,
 		defaultSizes: state => state.defaultSizes,
 		theme: state => state.availbleThemes[state.AppState.currenttheme],		
-		server: state => state.AppState.serverConnected.length>0?state.AppState.serverConnected:false
+		server: state => state.AppState.serverConnected.length>0?state.AppState.serverConnected:false,
+		fromExplorer: state => state.AppState.toWorkspace
 	}
 })

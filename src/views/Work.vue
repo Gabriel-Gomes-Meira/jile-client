@@ -3,17 +3,7 @@
         <layout
         :Title="'WorkSpacing'"     
         @tabchanged="tabchanged"
-        ></layout>
-        <!-- @openExplorer="exploring = !exploring" -->
-        
-        <v-container grid-list-xs fluid
-        class="Background l1" v-show="WKs.size<=0 || exploring">
-            <v-slide-y-transition>
-                <!-- <file-system v-show="exploring"/> -->
-                <!-- @openFile="callResolver"  -->
-            </v-slide-y-transition>
-        
-        </v-container>
+        ></layout>                        
 
         <v-tabs-items v-model="SelectedWS"
         v-if="WKs.size>0">
@@ -24,8 +14,7 @@
             class="Background l1">
             <Base 
             :WK="WK" 
-            @closeWC="(arg) => WKs.deleteWC(WK, arg)" />
-            
+            @closeWC="(arg) => WKs.deleteWC(WK, arg)" />            
             </v-container>          
         </v-tab-item>      
         </v-tabs-items>
@@ -36,7 +25,7 @@
 </template>
 
 <script>
-import WorkLayout from "./layout/work"
+import WorkLayout from "../components/Work"
 import Base from "../components/WorkSpace/Space.vue"
 import { mapGetters } from 'vuex';
 
@@ -44,8 +33,7 @@ export default {
     name:'Work',
 
     data: () =>({
-        SelectedWS:-1,
-        exploring:false
+        SelectedWS:-1,        
     }),
 
     components:{

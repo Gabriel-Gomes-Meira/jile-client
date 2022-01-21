@@ -15,7 +15,7 @@
             <v-col cols="9" 
             class="video-title-name">
                 <p class="l5--text text-truncate text-right">
-                    {{List[0]?List[seleIndex].title:'Sem arquivo'}}
+                    {{List[0]?List[seleIndex].name:'Sem arquivo'}}
                 </p>
             </v-col>
         </v-row>
@@ -60,7 +60,7 @@
             <v-carousel-item v-for="(image, index) in List" :key="index">                                  
                     <v-zoomer style="width: 100%; height: 100%;" :ref="'zoomer_'+viewer_id+'('+index+')'">
                         <img @load="activingSlide('zoomer_'+viewer_id+'('+index+')')"               
-                        :src="image.src"
+                        :src="`http://${server}/files/?path=${image.path}`"
                         class="img-slide-zoomer">
                     </v-zoomer>
             </v-carousel-item>
@@ -140,18 +140,18 @@ export default {
                 return true                                                      
             }
         },
-
+        
         ...mapGetters([
-            'contentsPresets'
-        ])
+            'server'
+        ])        
     },
     
     
     created(){
-        if(this.contentsPresets[this.viewer_id].seleIndex) {        
-            this.paginationVisible = this.contentsPresets[this.viewer_id].paginationVisible
-            this.controlsVisible = this.contentsPresets[this.viewer_id].controlsVisible
-        }
+        // if(this.contentsPresets[this.viewer_id].seleIndex) {        
+        //     this.paginationVisible = this.contentsPresets[this.viewer_id].paginationVisible
+        //     this.controlsVisible = this.contentsPresets[this.viewer_id].controlsVisible
+        // }
     },
 
     mounted(){
@@ -178,14 +178,14 @@ export default {
     methods:{
 
         loadPosition(){
-            this.seleIndex = this.contentsPresets[this.viewer_id].seleIndex
+            // this.seleIndex = this.contentsPresets[this.viewer_id].seleIndex
         },
 
         saveState(){            
-            this.contentsPresets[this.viewer_id].seleIndex = this.seleIndex            
-            this.contentsPresets[this.viewer_id].paginationVisible = this.paginationVisible
-            this.contentsPresets[this.viewer_id].controlsVisible = this.controlsVisible
-            this.$store.dispatch('saveContent')
+            // this.contentsPresets[this.viewer_id].seleIndex = this.seleIndex            
+            // this.contentsPresets[this.viewer_id].paginationVisible = this.paginationVisible
+            // this.contentsPresets[this.viewer_id].controlsVisible = this.controlsVisible
+            // this.$store.dispatch('saveContent')
         },
 
         handleNext(){

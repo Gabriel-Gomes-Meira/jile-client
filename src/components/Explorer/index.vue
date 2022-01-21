@@ -2,30 +2,49 @@
     <div>
         
         <v-app-bar        
-        dense class="l3 elevation-0">
+        dense class="elevation-0"
+        :color="selectedItems>0?'black':'l3'">
             <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
             <v-spacer></v-spacer>
-            <v-toolbar-title>{{Title}}</v-toolbar-title>
-<!-- 
-            <v-tabs
-            v-model="SelectedTab"
-            align-with-title
-            right        
-            @change="$emit('tabchanged', SelectedTab)">
-                <v-tabs-slider color="l6"></v-tabs-slider>
 
-                <v-tab
-                v-for="(Tab, index) in WKs.wks"
-                :key="'tab_'+index"        
-                @keydown="checkKey"            
-                >                                        
-                <template>            
-                    <span class="white--text">
-                        {{ Tab.name }}
-                    </span>
-                </template>      
-                </v-tab>
-            </v-tabs> -->
+            <v-btn icon disabled v-if="!selectedItems>0">
+              <v-icon>mdi-magnify</v-icon>
+            </v-btn>
+
+            <v-menu offset-y>
+              <template v-slot:activator="{on}">
+                <v-btn icon  v-if="!selectedItems>0"
+                  v-on="on">
+                  <v-icon>mdi-view-module</v-icon>
+                </v-btn>                
+              </template>
+              <v-card>
+              <v-btn v-for="i in 4" :key="i+'b'" @click="$emit('defCol')"
+              small>
+                {{i}}
+              </v-btn>                
+              </v-card>
+            </v-menu>
+              
+
+            <v-btn icon  v-if="!selectedItems>0"
+              >
+            <!-- @click="getBack"
+            :disabled="!havePath" -->
+              <v-icon>mdi-arrow-left</v-icon>
+            </v-btn>
+
+            <v-btn icon v-else @click="$emit('submit')">
+              <v-icon>mdi-arrow-up-bold-box-outline</v-icon>
+            </v-btn>
+            
+            <v-toolbar-title class="ml-6">
+                {{selectedItems>0?
+                `${selectedItems} mídias selecionadas...`
+                :Title}}
+            </v-toolbar-title>
+            
+                      
             
         </v-app-bar>
 
@@ -93,8 +112,8 @@
             <v-treeview
                 v-model="tree"                    
                 :items="Cells"
-                :load-children="getChilds"
-                activatable
+                :load-children="getChilds"                
+                activatable                
                 item-key="name"
                 open-on-click                
             >
@@ -110,8 +129,16 @@
                     mdi-file
                 </v-icon>
                 </template>
+                <template v-slot:label="{item}">
+                    <v-list-item-title class="text-truncate"
+                    @click="if(item.children) $emit('open', item)">
+                        {{item.name}} 
+                    </v-list-item-title>
+                </template>
             </v-treeview>                        
         </v-navigation-drawer>
+
+        
 
         
         <v-snackbar
@@ -133,11 +160,13 @@
 <script>
 import { mapGetters } from 'vuex';
 import axios from "axios"
+import Trunquee from "../Trunquee.vue"
+
 
 export default {
     name:"Explorerlayout",
 
-    props:['Title', 'server'],
+    props:['Title', 'server', 'selectedItems'],
 
     data(){
         return{
@@ -160,7 +189,8 @@ export default {
         }
     },
 
-    components:{        
+    components:{ 
+        Trunquee       
     },
 
     computed: {
@@ -192,8 +222,7 @@ export default {
         },    
 
         getDisks(){
-            axios.get(`${this.address}disks/`).then((response) =>{
-                console.log(response.data)
+            axios.get(`${this.address}disks/`).then((response) =>{                
                 this.Cells = response.data
             })
         },
@@ -201,7 +230,7 @@ export default {
         getChilds(item) {            
             axios.get(`${this.address}?path=${item.path}`)
                 .then(response => {                    
-                    item.children=(response.data)                    
+                    item.children=(response.data)
                 })
                 .catch(error => {                                    
             });            

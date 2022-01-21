@@ -62,7 +62,7 @@
 import { Box } from '@dattn/dnd-grid'
 import { mapGetters } from 'vuex';
 // import MusicPlayer from './Cell/Music Player/MusicPlayer.vue'
-import ImagesExplorer from '../Image Viewer/ImagesExplorer.vue'
+import ImagesExplorer from '../Image Viewer/CollectionHandle.vue'
 import MidiaExplorer from '../Midia Player/ListHandle.vue'
 // import Markdower from './Cell/TextEditor/Markdower.vue'
 

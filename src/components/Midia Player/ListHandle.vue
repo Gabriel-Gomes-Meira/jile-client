@@ -60,13 +60,13 @@
 		@openExplorer="explorer.active = true"
 		></player>		
 
-		<explorer 		
+		<!-- <explorer 		
 		:filter="explorer.filter"
 		:active="explorer.active"
 		:caminho="explorer.caminho"
 		@submit="receiveFiles"
 		@changePath="receivePath"
-		@close="explorer.active = false"/>
+		@close="explorer.active = false"/> -->
 
 	</div>
 </template>
@@ -78,7 +78,7 @@ import { mapGetters } from 'vuex';
 import Player from './PlayerFront.vue'
 import draggable from 'vuedraggable'
 import Trunquee from '../Trunquee.vue'
-import Jialog from '../File System/JileDialog.vue'
+// import Jialog from '../File System/JileDialog.vue'
 
 
 
@@ -91,7 +91,7 @@ export default {
 		Player,
 		draggable,
 		Trunquee,
-		Explorer:Jialog
+		// Explorer:Jialog
 	},
 
 	data(){    
@@ -102,11 +102,11 @@ export default {
 			isDeleting:false,   
 			willDeletes:[],
 			drawerList:false,
-			explorer:{
-				active:false,
-				filter:['.mp4', '.mkv', '.mp3', '.m4a'],
-				caminho: '/'
-			}
+			// explorer:{
+			// 	active:false,
+			// 	filter:['.mp4', '.mkv', '.mp3', '.m4a'],
+			// 	caminho: '/'
+			// }
 		}
 	},
 
@@ -167,7 +167,7 @@ export default {
 
 		receivePath(arg){
 			console.log(arg.length)
-			this.explorer.caminho = arg;
+			// this.explorer.caminho = arg;
 		},
 
 		// Metodos executados no ListHandle, porém chamados no Player

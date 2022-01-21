@@ -223,7 +223,7 @@ export default {
 
     computed: {
         ...mapGetters([
-        'WKs', 'theme'
+        'WKs', 'theme', 'fromExplorer'
     ])},
 
     methods:{
@@ -261,8 +261,11 @@ export default {
             this.$vuetify.theme.themes.dark[lay] = this.theme[lay];
             }
         });      
-                
-        
+               
+        // aqui haverá a função que cria um workspace e/ou célula quando algo vier do explorer
+        // if(this.fromExplorer){
+        //     
+        // }
     },
 }
 </script>

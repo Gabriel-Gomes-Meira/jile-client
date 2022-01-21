@@ -3,7 +3,7 @@
   <swiper class="swiper" :options="swiperOption" >
     <swiper-slide v-for="(img, index) in Images" :key="index"
     :ref="'ss_'+index">
-        <img :src="img.src" @click="setIndex(index)">
+        <img :src="`http://${server}/files/?path=${img.path}`" @click="setIndex(index)">
     </swiper-slide>    
     
   </swiper>
@@ -12,11 +12,18 @@
 <script>
 import { Swiper, SwiperSlide } from 'vue-awesome-swiper'
 import 'swiper/css/swiper.css'
+import { mapGetters } from "vuex"
 
 export default {
     name: 'PaginaSwip',
 
     props:['Images'],
+
+    computed:{
+        ...mapGetters([
+            'server'      
+        ])
+    },
 
     components: {
       	Swiper,
