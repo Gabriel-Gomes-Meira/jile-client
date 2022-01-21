@@ -12,42 +12,68 @@
             </v-btn>
 
             <v-menu offset-y>
-              <template v-slot:activator="{on}">
-                <v-btn icon  v-if="!selectedItems>0"
-                  v-on="on">
-                  <v-icon>mdi-view-module</v-icon>
-                </v-btn>                
-              </template>
-              <v-card>
-              <v-btn v-for="i in 4" :key="i+'b'" @click="$emit('defCol')"
-              small>
-                {{i}}
-              </v-btn>                
-              </v-card>
+                <template v-slot:activator="{on}">
+                    <v-btn icon  v-if="!selectedItems>0"
+                    v-on="on">
+                    <v-icon>mdi-view-module</v-icon>
+                    </v-btn>                
+                </template>
+                <v-card>
+                    <v-btn v-for="i in 4" :key="i+'b'" @click="$emit('defCol')"
+                    small>
+                    {{i}}
+                    </v-btn>                
+                </v-card>
             </v-menu>
               
+            <v-btn icon v-if="!selectedItems>0"
+            :disabled="!havepast"
+            @click="$emit('back')">
+                <v-icon>mdi-arrow-left</v-icon>
+            </v-btn>
 
-            <v-btn icon  v-if="!selectedItems>0"
-              >
-            <!-- @click="getBack"
-            :disabled="!havePath" -->
-              <v-icon>mdi-arrow-left</v-icon>
+            <v-btn icon v-if="!selectedItems>0"
+            :disabled="!havedest"
+            @click="$emit('front')">
+                <v-icon>mdi-arrow-right</v-icon>
+            </v-btn>
+
+            <v-btn icon v-if="!selectedItems>0"
+            @click="favoriteDrawer = !favoriteDrawer"
+            >
+                <v-icon>mdi-folder-star-multiple</v-icon>
             </v-btn>
 
             <v-btn icon v-else @click="$emit('submit')">
-              <v-icon>mdi-arrow-up-bold-box-outline</v-icon>
+                <v-icon>mdi-arrow-up-bold-box-outline</v-icon>
             </v-btn>
             
             <v-toolbar-title class="ml-6">
                 {{selectedItems>0?
                 `${selectedItems} mídias selecionadas...`
                 :Title}}
-            </v-toolbar-title>
-            
-                      
-            
+            </v-toolbar-title>                                  
         </v-app-bar>
 
+        <v-navigation-drawer v-model="favoriteDrawer"
+        absolute temporary   
+        right
+        width="auto"
+        class="l3">
+            <v-list nav
+            dense
+            active-class="white--text text--accent-4">            
+                <v-list-item v-for="folder in FavoritesFolders" :key="'star_'+folder.name"
+                @click="performOpen(folder)">
+                    <v-list-item-icon >
+                        <v-icon
+                        v-text="'mdi-folder-open'"/>                        
+                    </v-list-item-icon>
+                    <v-list-item-title 
+                    v-text="folder.name" />
+                </v-list-item>
+            </v-list>
+        </v-navigation-drawer>        
         
         <v-navigation-drawer v-model="drawer"
         absolute temporary   
@@ -111,7 +137,7 @@
             </v-list>            
             <v-treeview
                 v-model="tree"                    
-                :items="Cells"
+                :items="Folders"
                 :load-children="getChilds"                
                 activatable                
                 item-key="name"
@@ -131,12 +157,14 @@
                 </template>
                 <template v-slot:label="{item}">
                     <v-list-item-title class="text-truncate"
-                    @click="if(item.children) $emit('open', item)">
+                    @click="performOpen(item)">
                         {{item.name}} 
                     </v-list-item-title>
                 </template>
             </v-treeview>                        
         </v-navigation-drawer>
+
+        
 
         
 
@@ -166,7 +194,7 @@ import Trunquee from "../Trunquee.vue"
 export default {
     name:"Explorerlayout",
 
-    props:['Title', 'server', 'selectedItems'],
+    props:['Title', 'server', 'selectedItems', 'havepast', 'havedest'],
 
     data(){
         return{
@@ -176,7 +204,8 @@ export default {
                 snack:false
             },            
             tree:[],
-            Cells:[],
+            Folders:[],
+            favoriteDrawer:false,
             themes:[
                 {name:'gray', maincolor:'#4A6471'},
                 {name:'darkblue', maincolor:'#005E9A'},
@@ -195,7 +224,7 @@ export default {
 
     computed: {
         ...mapGetters([
-        'theme'
+        'theme', 'FavoritesFolders'
     ]),
         address(){
             if(this.server){
@@ -223,7 +252,7 @@ export default {
 
         getDisks(){
             axios.get(`${this.address}disks/`).then((response) =>{                
-                this.Cells = response.data
+                this.Folders = response.data
             })
         },
 
@@ -235,6 +264,13 @@ export default {
                 .catch(error => {                                    
             });            
         },  
+
+        performOpen(item){
+            if(item.children){
+                this.$emit('clearDest')
+                this.$emit('open', item)                
+            } 
+        }
      
     },
 

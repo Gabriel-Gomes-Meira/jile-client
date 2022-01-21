@@ -89,7 +89,8 @@ export default new Vuex.Store({
 		AppState:{
 			serverConnected:"",	
 			currenttheme:'darkblue',
-			toWorkspace:[]	
+			toWorkspace:[],
+			FavoritesFolders:[],
 		}
 	},
 
@@ -151,6 +152,7 @@ export default new Vuex.Store({
 		defaultSizes: state => state.defaultSizes,
 		theme: state => state.availbleThemes[state.AppState.currenttheme],		
 		server: state => state.AppState.serverConnected.length>0?state.AppState.serverConnected:false,
-		fromExplorer: state => state.AppState.toWorkspace
+		fromExplorer: state => state.AppState.toWorkspace,
+		FavoritesFolders: state => state.AppState.FavoritesFolders
 	}
 })

@@ -23,7 +23,10 @@ export default new Vuetify({
         l5: '#00B6BC',
         l6: '#00E1B9', 
         backcard:'#323232',
-        'mp4':'#E76F51'
+        'video':'#e76f51',
+        'audio':'#e9c46a',
+        'image':'#00b4d8',
+        'text':'#2a9d8f'
       }
     },
   },
