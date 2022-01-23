@@ -2,12 +2,11 @@
     <v-app
     background-color="primary"
     >   
+        <!-- :selectedItems="selectedItems.length" -->
         <layout 
         :Title="'Jile Client'"
         :server="server"
-        :selectedItems="selectedItems.length"
-        @open="setItems"  
-        @submit="deliverToWork"
+        @open="setItems"          
         :havepast="history.length>0"
         @back="topast"
         :havedest="future.length>0"
@@ -27,28 +26,28 @@
                 v-model="filter" mandatory 
                 v-show="!hasSelected"
                 >
-                        <v-item v-slot="{ toggle}" :value="type.type"
-                        v-for="(type, index) in bottom" :key="type.type">
-                            <v-hover v-slot="{ hover }"                
-                            >
-                                <v-card :key="index" @click="toggle"
-                                :color="type.type"
-                                style="position: relative!important;"
-                                :style="`top:${500+index}px; transition: 1s; 
-                                ${hover?'width: 170px;':'width: 155px;'}
-                                ${hover?'right: 0px;':'right: -108px;'}`" 
-                                
-                                class="pa-0 ma-0 rounded-r-0 rounded-l-pill mb-2" 
-                                >                        
-                                    <v-card-text >
-                                        <v-icon v-text="type.icon" class="mr-5"></v-icon>
+                    <v-item v-slot="{ toggle}" :value="type.type"
+                    v-for="(type, index) in bottom" :key="type.type">
+                        <v-hover v-slot="{ hover }"                
+                        >
+                            <v-card :key="index" @click="toggle"
+                            :color="type.type"
+                            style="position: relative!important;"
+                            :style="`top:${500+index}px; transition: 1s; 
+                            ${hover?'width: 170px;':'width: 155px;'}
+                            ${hover?'right: 0px;':'right: -108px;'}`" 
+                            
+                            class="pa-0 ma-0 rounded-r-0 rounded-l-pill mb-2" 
+                            >                        
+                                <v-card-text >
+                                    <v-icon v-text="type.icon" class="mr-5"></v-icon>
 
-                                        <span class="white--text right-text"
-                                        > {{ type.name }} </span>
-                                    </v-card-text>
-                                </v-card>
-                            </v-hover>
-                        </v-item>
+                                    <span class="white--text right-text"
+                                    > {{ type.name }} </span>
+                                </v-card-text>
+                            </v-card>
+                        </v-hover>
+                    </v-item>
                 </v-item-group>
             </v-slide-x-transition>
 
@@ -62,6 +61,7 @@
                     class="explorer"
                     :items="lastOpenFolder?lastOpenFolder.children:[]"
                     @open="getChilds"
+                    @submit="deliverToWork"
                     :isloading="isloading"
                     @updateSelection="updateSelection"
                     :filter="filter"
@@ -92,6 +92,7 @@ import vexplorer from "../components/Explorer/vexplorer.vue"
 import Base from "../components/WorkSpace/Space.vue"
 import {mapGetters} from "vuex"
 import axios from "axios";
+import * as types from "../components/Types"
 
 export default {
 
@@ -101,10 +102,14 @@ export default {
         isloading:false,
         selectedItems:[],
         SelectedWS:undefined,
-        filter:'',
+        filter:'all',
 
         bottom:[
             {
+                type:"all",
+                icon:"mdi-archive",
+                name:"Tudo"
+            },{
                 type:"video",
                 icon:"mdi-television-play",
                 name:"Video"
@@ -192,9 +197,22 @@ export default {
             this.selectedItems = arr;
         },
         
-        deliverToWork(){
-            this.$store.dispatch('saveAppState', ['toWorkspace', this.selectedItems])                        
-            this.$router.push('Work')
+        deliverToWork(content){
+            
+            // Não dialog
+            this.WKs.createWS('Workspace '+
+                                this.WKs.size)
+            var WC = this.WKs.createWC(this.WKs.size-1,
+                types.default.processors[content.extension])
+
+            this.WKs.setContents(WC, [content])
+            
+            //in dialog
+            // {
+                // ...
+            // }
+
+            this.SelectedWS = this.WKs.size-1
         },
 
         //retrocede no histórico de folders entrados
@@ -259,7 +277,9 @@ export default {
 
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-Vou criar um "waiting action" para que a comunicação do workspace com o exploerer seja por um caminho um por vez:
-Crio uma instância de célula em um workspace, e para abrir um arquivo nela clicko no explorer icone da célula e volto o tab para o exploere (invés de fazer um dialog), daí após selecionar, (ou cancelar) volto para o workspace. Esse processo vale para quais quer tipos de ação, então já devo pensar em como crudar arquivos.
+vexplorer terá modo "non-dialog" e "dialog" para performar as requisições de busca de arquivos.
+A mudança de plano se dá pelo fato de ser mais cômodo e adequado para UX se o explorer estiver junto ao workspace.
+Handler irá prover a comunicação.
 
 Apartir de agora também, o explorer abri um determinado tipo de arquivo com um duplo click, em um workspace criado dinâmicamente.
+
