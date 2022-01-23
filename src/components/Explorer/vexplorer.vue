@@ -1,6 +1,6 @@
 <template>
-    <v-container fluid fill-height
-    class="Background l1">
+    <!-- <v-container fluid fill-height
+    class="l1"> -->
         <v-row class="fill-height pb-10 justify-center">
             <v-col cols="12" class="pb-10">
                 <v-card height="88vh"
@@ -66,7 +66,7 @@
             </v-col>
         </v-row>
 
-        <v-hover v-slot="{ hover }">
+        <!-- <v-hover v-slot="{ hover }">
             <v-btn color="#f77f00" fab absolute bottom 
             @click="$emit('performFavorite')"
             left            
@@ -78,8 +78,8 @@
                 size="35"
                 v-text="isStared?'mdi-star-off-outline':'mdi-star-outline'"></v-icon>
             </v-btn>                            
-        </v-hover>        
-    </v-container>
+        </v-hover>         -->
+    <!-- </v-container> -->
 </template>
 
 <script>

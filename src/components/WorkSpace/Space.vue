@@ -3,6 +3,7 @@
   <dnd-grid-container :layout.sync="WK.layout"
   :margin="4"  
   :maxRowCount="114"
+  class="l1"
   :cellSize="{
     h:2,
     w:3

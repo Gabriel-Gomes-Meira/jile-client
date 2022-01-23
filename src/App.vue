@@ -1,13 +1,11 @@
 <template>
-  <v-app id="app">   
-    
-    <v-scroll-x-transition v-if="$router.history.current.name=='Work'">
+  <v-app id="app"
+  class="l1">   
+        
+    <!-- <v-scroll-x-reverse-transition v-else-if="$router.history.current.name=='Explorer'"> -->
       <router-view/>
-    </v-scroll-x-transition>
-    <v-scroll-x-reverse-transition v-else-if="$router.history.current.name=='Explorer'">
-      <router-view/>
-    </v-scroll-x-reverse-transition>
-    <router-view v-else/> 
+    <!-- </v-scroll-x-reverse-transition>
+    <router-view v-else/>  -->
     
     
   </v-app>
@@ -36,7 +34,7 @@ export default {
 
   created(){    
     if(this.server) {
-      this.$router.push('Work')
+      this.$router.push('Explorer')
     }    
     
   }

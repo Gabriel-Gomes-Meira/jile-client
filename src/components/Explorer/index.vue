@@ -5,6 +5,17 @@
         dense class="elevation-0"
         :color="selectedItems>0?'black':'l3'">
             <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+            <v-tabs
+            optional
+            @change="$emit('tabchanged', SelectedTab)"
+            v-model="SelectedTab"
+            align-with-title>
+                <v-tab 
+                v-for="Tab in WKs.wks"
+                :key="'tab_'+Tab.name">
+                    {{Tab.name}}
+                </v-tab>
+            </v-tabs>
             <v-spacer></v-spacer>
 
             <v-btn icon disabled v-if="!selectedItems>0">
@@ -44,7 +55,8 @@
                 <v-icon>mdi-folder-star-multiple</v-icon>
             </v-btn>
 
-            <v-btn icon v-else @click="$emit('submit')">
+            <v-btn icon v-else @click="$emit('submit')"
+            style="z-index: 15;">
                 <v-icon>mdi-arrow-up-bold-box-outline</v-icon>
             </v-btn>
             
@@ -82,15 +94,7 @@
         
             <v-list nav
             dense
-            active-class="white--text text--accent-4">            
-            
-                <v-list-item            
-                to="/Work">
-                    <v-list-item-icon>
-                        <v-icon>mdi-home-analytics</v-icon>
-                    </v-list-item-icon>
-                    <v-list-item-title>WorkSpace</v-list-item-title>
-                </v-list-item>            
+            active-class="white--text text--accent-4">                      
 
                 <v-expansion-panels focusable flat
                 style="max-width:250px;min-width:250px"
@@ -202,7 +206,8 @@ export default {
             message:'',
             dialog:{
                 snack:false
-            },            
+            },   
+            SelectedTab:-1,         
             tree:[],
             Folders:[],
             favoriteDrawer:false,
@@ -218,13 +223,12 @@ export default {
         }
     },
 
-    components:{ 
-        Trunquee       
+    components:{    
     },
 
     computed: {
         ...mapGetters([
-        'theme', 'FavoritesFolders'
+        'theme', 'FavoritesFolders', 'WKs'
     ]),
         address(){
             if(this.server){

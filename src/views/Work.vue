@@ -7,16 +7,16 @@
 
         <v-tabs-items v-model="SelectedWS"
         v-if="WKs.size>0">
-        <v-tab-item
-        v-for="(WK, index) in WKs.wks"
-        :key="index">
-            <v-container grid-list-xs fluid
-            class="Background l1">
-            <Base 
-            :WK="WK" 
-            @closeWC="(arg) => WKs.deleteWC(WK, arg)" />            
-            </v-container>          
-        </v-tab-item>      
+            <v-tab-item
+            v-for="(WK, index) in WKs.wks"
+            :key="index">
+                <v-container grid-list-xs fluid
+                class="Background l1">
+                <Base 
+                :WK="WK" 
+                @closeWC="(arg) => WKs.deleteWC(WK, arg)" />            
+                </v-container>          
+            </v-tab-item>      
         </v-tabs-items>
 
             

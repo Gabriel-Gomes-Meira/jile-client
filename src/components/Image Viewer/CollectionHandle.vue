@@ -42,8 +42,6 @@ export default {
 	
 
 	created(){		
-
-		console.log(this.fromExplorer)
 		this.FilesSources = this.fromExplorer
 
 		// this.loadingFiles = true;
