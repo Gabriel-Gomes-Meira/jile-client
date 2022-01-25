@@ -13,6 +13,7 @@
         @front="todest"
         @clearDest="future = []"
         @tabchanged="tabchanged"
+        :SelectedTab="SelectedWS"
         />                
            
         <v-container fluid fill-height

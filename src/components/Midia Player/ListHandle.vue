@@ -54,8 +54,8 @@
 			</v-list>
 		</v-navigation-drawer>
 				
-		<player :Midia="MidiaSources[0]" :loadingFiles="loadingFiles"
-		:contentsPresets="WKs.searchWC(boxid).contentsPresets" @drawerin="drawerList=true" @next="next" @prev="prev" @nextRandom="getRandom"
+		<player :Midia="wc.contents[0]" :loadingFiles="loadingFiles"
+		:settings="WKs.searchWC(boxid).settings" @drawerin="drawerList=true" @next="next" @prev="prev" @nextRandom="getRandom"
 		ref="player" :player_id="boxid"
 		@openExplorer="explorer.active = true"
 		></player>		
@@ -95,8 +95,7 @@ export default {
 	},
 
 	data(){    
-		return{    
-			MidiaSources:[],
+		return{    			
 			ListMask:[],        
 			loadingFiles:false,
 			isDeleting:false,   
@@ -115,12 +114,16 @@ export default {
 			'WKs'	
 		]),
 
+		wc(){
+			return this.WKs.searchWC(this.boxid)
+		},
+
 		selected:{ 
 			get(){
 				//v-model será do atual reproduzindo caso usário não esteja deletando a lista
 				if(!this.isDeleting) {
 					return this.ListMask.findIndex((element) =>{        
-						if (element.name == this.MidiaSources[0].name) {                   
+						if (element.name == this.wc.contents[0].name) {                   
 							return true;
 						}
 					})
@@ -134,7 +137,7 @@ export default {
 				if(value) {
 					//tratamento para definir o selected value ser igual ao video que reproduzirá na lista
 					if (!this.isDeleting) {
-						var wanted = this.MidiaSources.findIndex((element) =>{
+						var wanted = this.wc.contents.findIndex((element) =>{
 						if(element.name == this.ListMask[value].name) {
 								return true;
 							}
@@ -142,7 +145,7 @@ export default {
 		
 						// fazer remoção do inicio e adição ao final até o quem que eu desejo estar no inicio                
 						for (let index = wanted; index > 0; index--) {
-							this.MidiaSources.push(this.MidiaSources.shift())                    
+							this.wc.contents.push(this.wc.contents.shift())                    
 						}
 					} else {
 						//tratamento para escolher itens para se deletar            
@@ -162,7 +165,7 @@ export default {
 
 	methods:{	
 		receiveFiles(arg){
-			this.MidiaSources = this.ListMask = arg;
+			this.wc.contents = this.ListMask = arg;
 		},
 
 		receivePath(arg){
@@ -232,20 +235,20 @@ export default {
 				//removendo 
 				
 
-				willRemoved = this.MidiaSources.findIndex((element)=>{
+				willRemoved = this.wc.contents.findIndex((element)=>{
 					if(element.name == e) {
 						return true;
 					}
 				})
-				willRemoved = this.MidiaSources.splice(willRemoved, 1)            
+				willRemoved = this.wc.contents.splice(willRemoved, 1)            
 				//repetindo 
 			})
 
 			// finalizando processo de deleção
 			this.deletingState()
-			//setando selected com o index de .ListMask que corresponde ao name do, atuaListMaskente em execução, .MidiaSources
+			//setando selected com o index de .ListMask que corresponde ao name do, atuaListMaskente em execução, .wc.contents
 			this.selected = this.ListMask.findIndex((element) => {
-				if(element.name == this.MidiaSources[0].name) {
+				if(element.name == this.wc.contents[0].name) {
 					return true
 				}
 			})

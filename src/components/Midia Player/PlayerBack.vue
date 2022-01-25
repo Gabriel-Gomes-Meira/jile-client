@@ -6,7 +6,7 @@
         @timeupdate="$emit('updateProgress')"
         @ended="$emit('finish')"
         preload="metadata">
-            <source :src="'http://10.0.0.107:3000/files/?path='+Midia.path"
+            <source :src="`http://${server}/files/?path=${Midia.path}`"
             :type="'video/'+type"
             media="(min-width: 1024px)">            
         </video>
@@ -22,6 +22,8 @@
 </template>
 
 <script>
+import {mapGetters} from "vuex"
+
 export default {
     props:['player_id', 'Midia'],
     
@@ -30,9 +32,12 @@ export default {
     }),
 
     computed:{
+        ...mapGetters([
+            'server'
+        ]),
         type(){
             console.log(this.Midia)
-            var tipo = this.Midia.tipo.split(".")            
+            var tipo = this.Midia.extension.split(".")            
             return tipo[1]
         }
     },

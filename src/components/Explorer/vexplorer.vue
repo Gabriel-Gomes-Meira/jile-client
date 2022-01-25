@@ -18,12 +18,12 @@
                     </v-container>       
                     
                     
-                    <v-item-group multiple v-model="selectedItems" v-show="items.length>0"
+                    <v-item-group :multiple="dialogMode" v-model="selectedItems" v-show="items.length>0"
                     @change="(arr) => $emit('updateSelection', arr)">
                         <v-container fluid class="mb-8">
                             <v-slide-x-transition>
                             <v-row  v-show="!isloading">  
-                                <v-col :cols="cols" v-for="f in items" :key="f.id"
+                                <v-col :cols="cols" v-for="f in filtered" :key="f.id"
                                 style="height:100px" class="mt-2" >
                                     
                                     <v-card height="80px" outlined 
@@ -34,13 +34,14 @@
                                         <v-icon size="80">mdi-folder</v-icon>
                                     </v-card> 
                                     
-                                    <v-item v-slot="{ active, toggle }" v-else-if="!filter || filter == types[f.extension]"
+                                    <v-item v-slot="{ active, toggle }" v-else
                                     :value="f" 
                                     >
                                         <v-card height="80px" outlined class="d-flex align-center justify-center pa-0 rounded-b-0"        
-                                        @click="toggle"        
+                                        @click="toggle"
+                                        @dblclick="!dialogMode?$emit('submit', f):''"        
                                         :color="active?'primary':'blackcard'"
-                                        >                                        
+                                        >  
                                             <v-badge right :color="types[f.extension]?types[f.extension]:''" overlap tile
                                             offset-x="70"
                                             offset-y="70">
@@ -53,7 +54,7 @@
                                     </v-item>
 
                                     <v-card outlined height="20" class="rounded-t-0 text-truncate text-caption text-center"
-                                    v-if="f.children || (!filter || filter == types[f.extension])">
+                                    >
                                     {{f.name}}
                                     </v-card>
                                 </v-col>                                 
@@ -64,21 +65,22 @@
                     </v-card>   
                 </v-card>
             </v-col>
+
+            <v-hover v-slot="{ hover }">
+                <v-btn color="#f77f00" fab absolute bottom 
+                @click="$emit('performFavorite')"
+                left            
+                :style="`transition: 1s; bottom: 60px; ${hover?'left:15px':'left: -20px'}`"
+                small
+                elevation="2"
+                v-show="items.length>0">
+                    <v-icon
+                    size="35"
+                    v-text="isStared?'mdi-star-off-outline':'mdi-star-outline'"></v-icon>
+                </v-btn>                            
+            </v-hover>        
         </v-row>
 
-        <!-- <v-hover v-slot="{ hover }">
-            <v-btn color="#f77f00" fab absolute bottom 
-            @click="$emit('performFavorite')"
-            left            
-            :style="`transition: 1s; bottom: 60px; ${hover?'left:15px':'left: -20px'}`"
-            small
-            elevation="2"
-            v-show="items.length>0">
-                <v-icon
-                size="35"
-                v-text="isStared?'mdi-star-off-outline':'mdi-star-outline'"></v-icon>
-            </v-btn>                            
-        </v-hover>         -->
     <!-- </v-container> -->
 </template>
 
@@ -105,9 +107,13 @@ export default {
         },
         filter:{
             type:String,
-            default:''
+            default:'all'
         },
         isStared:{
+            type:Boolean,
+            default:false
+        },
+        dialogMode:{
             type:Boolean,
             default:false
         }
@@ -117,6 +123,14 @@ export default {
         selectedItems:0,  
         types:types.default.extensions
     }),
+
+    computed:{
+        filtered(){
+            return this.items.filter((element) => {
+                return element.children || this.filter == 'all' || this.filter == this.types[element.extension]
+            })
+        }
+    },
 
     methods:{
         

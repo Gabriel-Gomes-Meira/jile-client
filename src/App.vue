@@ -6,7 +6,19 @@
       <router-view/>
     <!-- </v-scroll-x-reverse-transition>
     <router-view v-else/>  -->
-    
+
+    <v-snackbar
+    v-model="snack.dialog">
+        {{ snack.message }}
+        <template v-slot:action>
+            <v-btn
+            color="red"
+            text                
+            @click="snack.dialog = false">
+            Fechar
+            </v-btn>
+        </template>
+    </v-snackbar>
     
   </v-app>
 </template>
@@ -26,15 +38,16 @@ export default {
 
   computed: {
     ...mapGetters([
-      'server'
+      'server', 'snack'
   ])},
 
   methods:{        
   },
 
-  created(){    
-    if(this.server) {
-      this.$router.push('Explorer')
+  created(){   
+    this.$store.dispatch('loadState')   
+    if(!this.server) {
+      this.$router.push('/')
     }    
     
   }

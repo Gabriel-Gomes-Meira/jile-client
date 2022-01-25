@@ -2,13 +2,15 @@
     <div>
         
         <v-app-bar        
-        dense class="elevation-0"
-        :color="selectedItems>0?'black':'l3'">
+        dense class="elevation-0 l3"
+        @contextmenu="show"
+        >
+        <!-- :color="selectedItems>0?'black':'l3'" -->
             <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
             <v-tabs
-            optional
-            @change="$emit('tabchanged', SelectedTab)"
-            v-model="SelectedTab"
+            optional            
+            v-model="tabSelected"
+
             align-with-title>
                 <v-tab 
                 v-for="Tab in WKs.wks"
@@ -18,13 +20,13 @@
             </v-tabs>
             <v-spacer></v-spacer>
 
-            <v-btn icon disabled v-if="!selectedItems>0">
+            <v-btn icon disabled >
               <v-icon>mdi-magnify</v-icon>
             </v-btn>
 
             <v-menu offset-y>
                 <template v-slot:activator="{on}">
-                    <v-btn icon  v-if="!selectedItems>0"
+                    <v-btn icon  
                     v-on="on">
                     <v-icon>mdi-view-module</v-icon>
                     </v-btn>                
@@ -35,36 +37,37 @@
                     {{i}}
                     </v-btn>                
                 </v-card>
-            </v-menu>
+            </v-menu>            
               
-            <v-btn icon v-if="!selectedItems>0"
+            <v-btn icon 
             :disabled="!havepast"
             @click="$emit('back')">
                 <v-icon>mdi-arrow-left</v-icon>
             </v-btn>
 
-            <v-btn icon v-if="!selectedItems>0"
+            <v-btn icon 
             :disabled="!havedest"
             @click="$emit('front')">
                 <v-icon>mdi-arrow-right</v-icon>
             </v-btn>
 
-            <v-btn icon v-if="!selectedItems>0"
+            <v-btn icon 
             @click="favoriteDrawer = !favoriteDrawer"
             >
                 <v-icon>mdi-folder-star-multiple</v-icon>
             </v-btn>
 
-            <v-btn icon v-else @click="$emit('submit')"
+            <!-- <v-btn icon @click="$emit('submit')"
             style="z-index: 15;">
                 <v-icon>mdi-arrow-up-bold-box-outline</v-icon>
-            </v-btn>
+            </v-btn> -->
             
-            <v-toolbar-title class="ml-6">
+            <!-- <v-toolbar-title class="ml-6">
                 {{selectedItems>0?
                 `${selectedItems} mídias selecionadas...`
                 :Title}}
-            </v-toolbar-title>                                  
+            </v-toolbar-title>                                   -->
+            <v-toolbar-title v-text="Title" />
         </v-app-bar>
 
         <v-navigation-drawer v-model="favoriteDrawer"
@@ -128,36 +131,35 @@
                         </v-expansion-panel-content>
                     </v-expansion-panel>
                 </v-expansion-panels>
-
-
                 
-                <!-- <v-list-item            
-                @click="saveState">
+                <v-list-item            
+                @click="$store.dispatch('saveWorkState')">
                     <v-list-item-icon>
                     <v-icon>mdi-content-save-outline</v-icon>
                     </v-list-item-icon>
                     <v-list-item-title>Salvar</v-list-item-title>
-                </v-list-item> -->                
-            </v-list>            
+                </v-list-item>                
+            </v-list>      
+
             <v-treeview
-                v-model="tree"                    
-                :items="Folders"
-                :load-children="getChilds"                
-                activatable                
-                item-key="name"
-                open-on-click                
+            v-model="tree"                    
+            :items="Folders"
+            :load-children="getChilds"                
+            activatable                
+            item-key="name"
+            open-on-click                
             >
                 <template v-slot:prepend="{ item, open }">
-                <v-icon v-if="item.children && !item.disk">
-                    {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
-                </v-icon>
-                <v-icon v-else-if="item.disk" size="24">
-                    mdi-harddisk
-                </v-icon>
-                <v-icon v-else>
-                    <!-- {{ files[item.file] }} -->
-                    mdi-file
-                </v-icon>
+                    <v-icon v-if="item.children && !item.disk">
+                        {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
+                    </v-icon>
+                    <v-icon v-else-if="item.disk" size="24">
+                        mdi-harddisk
+                    </v-icon>
+                    <v-icon v-else>
+                        <!-- {{ files[item.file] }} -->
+                        mdi-file
+                    </v-icon>
                 </template>
                 <template v-slot:label="{item}">
                     <v-list-item-title class="text-truncate"
@@ -168,46 +170,58 @@
             </v-treeview>                        
         </v-navigation-drawer>
 
-        
-
-        
-
-        
-        <v-snackbar
-        v-model="dialog.snack">
-            {{ message }}
-            <template v-slot:action>
-                <v-btn
-                color="red"
-                text                
-                @click="dialog.snack = false">
-                Fechar
-                </v-btn>
+        <v-menu
+        v-model="showMenu.active"
+        :position-x="showMenu.x"
+        :position-y="showMenu.y"
+        absolute
+        offset-y>
+        <v-sheet color="backcard" outlined rounded="">
+            <v-list class="px-1 pb-0 pt-1"
+            dense rounded
+            color="l4">
+            <template v-for="(item, index) in showMenu.items">
+                <v-list-item
+                dense
+                :disabled="(tabSelected || tabSelected>=0) || index==0?false:true"
+                :key="index"
+                @click="item.action"
+                class="py-0 px-2">
+                <v-list-item-icon class="mx-0"> 
+                    <v-icon 
+                    size="20"
+                    v-text="item.icon" />
+                </v-list-item-icon>
+                <v-list-item-title
+                class="pa-0">
+                    {{ item.label }}
+                </v-list-item-title>
+                </v-list-item
+                >
+                <v-divider :key="index+'divid'"
+                v-if="index+1<showMenu.items.length"
+                class="backcard"></v-divider>
             </template>
-        </v-snackbar>
-
+            </v-list>
+        </v-sheet>
+        </v-menu>                           
     </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
 import axios from "axios"
-import Trunquee from "../Trunquee.vue"
+
 
 
 export default {
     name:"Explorerlayout",
 
-    props:['Title', 'server', 'selectedItems', 'havepast', 'havedest'],
+    props:['Title', 'server', 'havepast', 'havedest', 'SelectedTab'],
 
     data(){
         return{
-            drawer:false,            
-            message:'',
-            dialog:{
-                snack:false
-            },   
-            SelectedTab:-1,         
+            drawer:false,
             tree:[],
             Folders:[],
             favoriteDrawer:false,
@@ -219,7 +233,35 @@ export default {
                 {name:'darkambar', maincolor:'#C85700'},
                 {name:'vinne', maincolor:'#880E4F'},
                 {name:'darkred', maincolor:'#8E1616'}
-            ],            
+            ],
+            showMenu: {
+                active:false,
+                x:0,
+                y:0,
+                items:[
+                    { 
+                        label:'Novo',
+                        icon:'mdi-plus-circle-outline',
+                        action:() => {
+                            this.WKs.createWS(
+                                'WorkSpace '+(this.WKs.size+1)
+                            )
+                        }                       
+                    },{
+                        label:'Renomear',
+                        icon:'mdi-rename-box',                    
+                        action:() => {
+                        
+                        }
+                    },{
+                        label:'Deletar',
+                        icon:'mdi-trash-can',
+                        action:() => {
+
+                        }
+                    }
+                ]
+            }            
         }
     },
 
@@ -228,23 +270,25 @@ export default {
 
     computed: {
         ...mapGetters([
-        'theme', 'FavoritesFolders', 'WKs'
-    ]),
+            'theme', 'FavoritesFolders', 'WKs'
+        ]),
         address(){
             if(this.server){
                 return `http://${this.server}/`;
             } 
+        },
+        tabSelected:{
+            get(){
+                return this.SelectedTab;
+            },
+            set(value){
+                console.log(value)
+                this.$emit('tabchanged', value)
+            }
         }
     },
 
-    methods:{
-
-        // saveState(){
-        //     this.$store.dispatch('saveState').then((message) =>{
-        //         this.message = message
-        //         this.dialog.snack = true
-        //     })
-        // },                
+    methods:{                  
 
         changeTheme(value){
             this.$store.dispatch('saveAppState', ['currenttheme',value]).then(()=>{                            
@@ -274,7 +318,17 @@ export default {
                 this.$emit('clearDest')
                 this.$emit('open', item)                
             } 
-        }
+        },
+
+        show (e) {
+            e.preventDefault()
+            this.showMenu.active = false
+            this.showMenu.x = e.clientX
+            this.showMenu.y = e.clientY
+            this.$nextTick(() => {
+                this.showMenu.active = true
+            })
+        },
      
     },
 

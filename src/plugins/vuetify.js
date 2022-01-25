@@ -26,7 +26,8 @@ export default new Vuetify({
         'video':'#e76f51',
         'audio':'#e9c46a',
         'image':'#00b4d8',
-        'text':'#2a9d8f'
+        'text':'#2a9d8f',
+        'all':'#495057'
       }
     },
   },

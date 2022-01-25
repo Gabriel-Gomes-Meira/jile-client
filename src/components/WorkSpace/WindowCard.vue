@@ -49,8 +49,8 @@
           
           <!-- <navigation v-else-if="Data.type == 'Browser'"></navigation> -->
           
-          <!-- <markdower v-else
-          :height="Data.position.h*6-24"></markdower> -->
+          <markdower v-else
+          :boxid="Data.id"></markdower>
         </v-card>
         <!-- Cell Card End -->
           
@@ -64,7 +64,7 @@ import { mapGetters } from 'vuex';
 // import MusicPlayer from './Cell/Music Player/MusicPlayer.vue'
 import ImagesExplorer from '../Image Viewer/CollectionHandle.vue'
 import MidiaExplorer from '../Midia Player/ListHandle.vue'
-// import Markdower from './Cell/TextEditor/Markdower.vue'
+import Markdower from '../TextEditor/Markdower.vue'
 
 
 
@@ -76,7 +76,7 @@ export default {
         // MusicPlayer,
         ImagesExplorer,
         MidiaExplorer,
-        // Markdower,		
+        Markdower,		
     },
 
     computed: {

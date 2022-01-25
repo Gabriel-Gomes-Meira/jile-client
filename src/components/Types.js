@@ -11,5 +11,18 @@ export default {
         ".jpeg":"image",
         ".txt":"text",
         ".json":"text"
+    },
+    "processors":{
+        ".mp4":"Player",
+        ".avi":"Player",
+        ".mov":"Player",
+        ".mkv":"Player",
+        ".m4a":"Player",
+        ".mp3":"Player",
+        ".jpg":"Image",
+        ".png":"Image",
+        ".jpeg":"Image",
+        ".txt":"Text",
+        ".json":"Text"
     }
 }

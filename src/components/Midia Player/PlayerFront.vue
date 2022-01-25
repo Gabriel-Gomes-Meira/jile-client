@@ -107,7 +107,7 @@
             @click="toggleMute" :disabled="Midia||loadingFiles?false:true"
             @mouseover="expandVolume" 
             >
-              <v-icon>{{contentsPresets.volumeState}}</v-icon>
+              <v-icon>{{settings.volumeState}}</v-icon>
             </v-btn>            
               
             <v-col
@@ -118,7 +118,7 @@
               <v-slider :disabled="Midia||loadingFiles?false:true"
               style="height:33px"
               color="l5"
-              v-model="contentsPresets.volume"              
+              v-model="settings.volume"              
               @input="updateVolume"        
               :max="100"
               :min="0"
@@ -161,7 +161,7 @@
 				<v-list-item dense>
 					<v-switch
 					color="l5"
-					v-model="contentsPresets.autoplay"  
+					v-model="settings.autoplay"  
 					inset         
 					></v-switch>
 					<v-list-item-title
@@ -172,8 +172,8 @@
 				<v-list-item>
 					<v-switch
 					color="l5"
-					:disabled="contentsPresets.randomMode?true:false"
-					v-model="contentsPresets.loop"              
+					:disabled="settings.randomMode?true:false"
+					v-model="settings.loop"              
 					inset dense></v-switch>
 					<v-list-item-title
 					class="l6--text"> Repetir </v-list-item-title>
@@ -183,8 +183,8 @@
 				<v-list-item>
 					<v-switch
 					color="l5"
-					:disabled="contentsPresets.loop?true:false"
-					v-model="contentsPresets.randomMode"              
+					:disabled="settings.loop?true:false"
+					v-model="settings.randomMode"              
 					inset dense></v-switch>
 					<v-list-item-title
 					class="l6--text"> Aleatório </v-list-item-title>
@@ -201,7 +201,7 @@ import { mapGetters } from 'vuex';
 import PlayerBack from './PlayerBack.vue'
 
 export default {
-    props:['Midia', 'contentsPresets', 'loadingFiles', 'player_id'],
+    props:['Midia', 'settings', 'loadingFiles', 'player_id'],
 	
     data(){
 		return{
@@ -225,7 +225,7 @@ export default {
 
 	computed:{
 		...mapGetters([
-			// 'contentsPresets'
+			// 'settings'
 		])
 	},	
 	
@@ -249,14 +249,14 @@ export default {
 		// },		
 		      
 		next(){			
-			if(this.contentsPresets.randomMode) {
+			if(this.settings.randomMode) {
 				this.$emit('nextRandom')
 			} else {
 				this.$emit('next');
 			}      
 		},
 		prev(){
-			this.contentsPresets.currentTime = 0
+			this.settings.currentTime = 0
 			this.$emit('prev');
 		},
 
@@ -274,9 +274,9 @@ export default {
 		},				
 
 		finish(){
-			if(this.contentsPresets.loop) {
+			if(this.settings.loop) {
 				this.togglePlay();
-			} else if (this.contentsPresets.autoplay) {
+			} else if (this.settings.autoplay) {
 				this.next();
 			}        
 		},  
@@ -296,14 +296,14 @@ export default {
 		},								
 	
 		recoverTime(){
-			if(this.contentsPresets.currentTime) {
-				this.progressBar = this.contentsPresets.currentTime
+			if(this.settings.currentTime) {
+				this.progressBar = this.settings.currentTime
 				this.skipAhead()			
 			} else {
-				this.contentsPresets.currentTime = 0
+				this.settings.currentTime = 0
 			}	
 			
-			if(this.contentsPresets.autoplay) {
+			if(this.settings.autoplay) {
 				this.togglePlay()
 			}
 		},
@@ -316,9 +316,9 @@ export default {
 				this.progressBar = this.currentTime;                
 			}    
 			
-			if(this.currentTime>this.contentsPresets.currentTime) {
+			if(this.currentTime>this.settings.currentTime) {
 				
-				this.contentsPresets.currentTime = this.player.currentTime
+				this.settings.currentTime = this.player.currentTime
 				// this.$store.dispatch('saveContent');				
 			}
 								
@@ -338,26 +338,26 @@ export default {
 			}
 
 			this.updateVolumeIcon()			
-			this.player.volume = this.contentsPresets.volume/100;
+			this.player.volume = this.settings.volume/100;
 		},
 		updateVolumeIcon() {
 			if (this.player.muted || this.player.volume === 0) {
-				this.contentsPresets.volumeState = 'mdi-volume-mute'
-			} else if (this.contentsPresets.volume > 0 && this.contentsPresets.volume <= 30) {
-				this.contentsPresets.volumeState = 'mdi-volume-low'
-			} else if (this.contentsPresets.volume > 30 && this.contentsPresets.volume <= 70){
-				this.contentsPresets.volumeState = 'mdi-volume-medium'
+				this.settings.volumeState = 'mdi-volume-mute'
+			} else if (this.settings.volume > 0 && this.settings.volume <= 30) {
+				this.settings.volumeState = 'mdi-volume-low'
+			} else if (this.settings.volume > 30 && this.settings.volume <= 70){
+				this.settings.volumeState = 'mdi-volume-medium'
 			} else {
-				this.contentsPresets.volumeState = 'mdi-volume-high'
+				this.settings.volumeState = 'mdi-volume-high'
 			}
 		},
 
 		// Muta volume
 		toggleMute() {        
-			if (this.contentsPresets.volume>0) {            
-				this.contentsPresets.volume = 0;
+			if (this.settings.volume>0) {            
+				this.settings.volume = 0;
 			} else {
-				this.contentsPresets.volume = 20;
+				this.settings.volume = 20;
 			}
 
 			this.updateVolume()

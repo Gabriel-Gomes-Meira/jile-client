@@ -91,6 +91,10 @@ export default new Vuex.Store({
 			currenttheme:'darkblue',
 			toWorkspace:[],
 			FavoritesFolders:[],
+			snackbar:{
+				dialog:false,
+				message:''
+			}
 		}
 	},
 
@@ -115,7 +119,9 @@ export default new Vuex.Store({
 		},
 		
 		saveWorkSpaces(state){      
-			localStorage.setItem('workspaces', JSON.stringify(state.Handler.wks))			
+			localStorage.setItem('workspaces', JSON.stringify(state.Handler.wks))		
+			state.AppState.snackbar.dialog = true;
+			state.AppState.snackbar.message = 'Áreas de trabalho salvas, com sucesso!'	
 		},
 		
 		alterTheme(state, name){
@@ -136,16 +142,13 @@ export default new Vuex.Store({
 		},
 		
 		saveWorkState({ commit }) {
-			commit('saveWorkSpaces')	
-			return 'Estado dos Workspaces salvos!'		
+			commit('saveWorkSpaces')					
 		},
 
 		saveAppState({ commit }, data){
 			commit('setAppState', data)
 		}
-	},
-
-	
+	},	
 
   	getters: {
 		WKs: state => state.Handler,
@@ -153,6 +156,7 @@ export default new Vuex.Store({
 		theme: state => state.availbleThemes[state.AppState.currenttheme],		
 		server: state => state.AppState.serverConnected.length>0?state.AppState.serverConnected:false,
 		fromExplorer: state => state.AppState.toWorkspace,
-		FavoritesFolders: state => state.AppState.FavoritesFolders
+		FavoritesFolders: state => state.AppState.FavoritesFolders,
+		snack: state => state.AppState.snackbar
 	}
 })

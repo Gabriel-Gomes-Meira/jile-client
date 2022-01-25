@@ -9,6 +9,7 @@
   "dependencies": {
     "@dattn/dnd-grid": "^0.0.14",
     "@mdi/font": "5.9.55",
+    "@tinymce/tinymce-vue": "^3.2.8",
     "axios": "^0.24.0",
     "core-js": "^3.6.5",
     "roboto-fontface": "*",

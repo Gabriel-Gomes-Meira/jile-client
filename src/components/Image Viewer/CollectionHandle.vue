@@ -2,10 +2,9 @@
   
     <div class="drop">        
     
-		<image-viewer :List="FilesSources" :ref="'viewer_'+boxid"
+		<image-viewer :List="wc.contents" :ref="'viewer_'+boxid"
 		 :viewer_id="boxid"
-		 :loadingFiles="loadingFiles"></image-viewer>
-		 <!-- @openExplorer="openExplorer" -->
+		 :loadingFiles="loadingFiles"></image-viewer>		 
 							
     </div>
   
@@ -28,39 +27,23 @@ export default {
 	},
 
 	data(){    
-		return{        
-			FilesSources:[],      
+		return{        			 
 			loadingFiles:false,  
 		}
 	},
 
 	computed:{
 		...mapGetters([
-			'fromExplorer'
-		])
+			'WKs'
+		]),
+
+		wc(){
+			return this.WKs.searchWC(this.boxid)
+		}
 	},
 	
 
-	created(){		
-		this.FilesSources = this.fromExplorer
-
-		// this.loadingFiles = true;
-		// this.FilesSources = []
-
-		// setTimeout(() => {
-			// this.loadingFiles = false;	
-			// this.contentsPresets[this.boxid].FilesSources = this.FilesSources
-			// this.$store.dispatch('saveContent')			
-		// }, 1500);
-
-		// if(!this.contentsPresets[this.boxid]){			
-		// 	this.contentsPresets[this.boxid] = {
-		// 		FilesSources: [],				
-		// 	}
-		// } else if(this.contentsPresets[this.boxid].FilesSources.length>0) {									
-		// 	this.loadingFiles = true;
-		// 	// ipcRenderer.send('readin', this.contentsPresets[this.boxid].FilesSources)
-		// }		
+	created(){								
 	},
   
   	methods:{		    									

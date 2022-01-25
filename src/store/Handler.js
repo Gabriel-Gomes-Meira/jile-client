@@ -7,9 +7,9 @@ class Handler{
         return this.wks.length
     }
 
-    createWS(data) {           
+    createWS(name) {           
         this.wks.push({
-            name:data.name,
+            name:name,
             layout:[]
         })            
     }
@@ -47,24 +47,23 @@ class Handler{
         return null
         
     }
-    
 
     createWC(index, type){
 
         //generating new id by time
         var now = new Date                
         var nid = 'box_'+now.getTime()                                         
-        var cp = {}
+        var settings = {} // "content presets"
         if(type == 'Player'){
-            cp.volumeState = 'mdi-volume-medium'
-            cp.volume = 70
-            cp.randomMode = false;
-            cp.currentTime = 0
-            cp.lopp = false
-            cp.autoplay = false
+            settings.volumeState = 'mdi-volume-medium'
+            settings.volume = 70
+            settings.randomMode = false;
+            settings.currentTime = 0
+            settings.loop = false
+            settings.autoplay = false
         }
 
-        this.wks[index].layout.push({            
+        var wc = {            
             id: nid,
             hidden: false,
             pinned: false,
@@ -75,11 +74,17 @@ class Handler{
                 h: 2 
             },
             type:type,    
-            contentsPresets:cp           
-        })
+            settings:settings,
+            contents:[]          
+        }
 
-
-        
+        this.wks[index].layout.push(wc)        
+        return wc
+    }
+    
+    setContents(wc, contents){
+        wc.contents = []
+        wc.contents = contents
     }
 
     deleteWC(WK, cellId){                
