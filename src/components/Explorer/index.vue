@@ -170,47 +170,23 @@
             </v-treeview>                        
         </v-navigation-drawer>
 
-        <v-menu
-        v-model="showMenu.active"
-        :position-x="showMenu.x"
-        :position-y="showMenu.y"
-        absolute
-        offset-y>
-        <v-sheet color="backcard" outlined rounded="">
-            <v-list class="px-1 pb-0 pt-1"
-            dense rounded
-            color="l4">
-            <template v-for="(item, index) in showMenu.items">
-                <v-list-item
-                dense
-                :disabled="(tabSelected || tabSelected>=0) || index==0?false:true"
-                :key="index"
-                @click="item.action"
-                class="py-0 px-2">
-                <v-list-item-icon class="mx-0"> 
-                    <v-icon 
-                    size="20"
-                    v-text="item.icon" />
-                </v-list-item-icon>
-                <v-list-item-title
-                class="pa-0">
-                    {{ item.label }}
-                </v-list-item-title>
-                </v-list-item
-                >
-                <v-divider :key="index+'divid'"
-                v-if="index+1<showMenu.items.length"
-                class="backcard"></v-divider>
-            </template>
-            </v-list>
-        </v-sheet>
-        </v-menu>                           
+        <menu-tab
+        :isShowing="showMenu.active"
+        :x="showMenu.x"
+        :y="showMenu.y"
+        :tabSelected="tabSelected"
+        @close="showMenu.active = false"
+        @create="creteWork"
+        @edited="renameWork"
+        @delete="deleteWork">
+        </menu-tab>                                
     </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex';
 import axios from "axios"
+import menu from "./Menutab.vue"
 
 
 
@@ -237,35 +213,13 @@ export default {
             showMenu: {
                 active:false,
                 x:0,
-                y:0,
-                items:[
-                    { 
-                        label:'Novo',
-                        icon:'mdi-plus-circle-outline',
-                        action:() => {
-                            this.WKs.createWS(
-                                'WorkSpace '+(this.WKs.size+1)
-                            )
-                        }                       
-                    },{
-                        label:'Renomear',
-                        icon:'mdi-rename-box',                    
-                        action:() => {
-                        
-                        }
-                    },{
-                        label:'Deletar',
-                        icon:'mdi-trash-can',
-                        action:() => {
-
-                        }
-                    }
-                ]
-            }            
+                y:0,                
+            }         
         }
     },
 
-    components:{    
+    components:{ 
+        MenuTab :menu   
     },
 
     computed: {
@@ -282,7 +236,7 @@ export default {
                 return this.SelectedTab;
             },
             set(value){
-                console.log(value)
+                // console.log(value)
                 this.$emit('tabchanged', value)
             }
         }
@@ -329,6 +283,21 @@ export default {
                 this.showMenu.active = true
             })
         },
+
+        creteWork(){
+            this.WKs.createWS(
+                'WorkSpace '+(this.WKs.size+1)
+            )
+            this.tabSelected = this.WKs.size-1
+        },
+
+        renameWork(name){
+            this.WKs.renameWS(name, this.tabSelected) 
+        },
+
+        deleteWork(){
+            this.WKs.deleteWS(this.tabSelected)
+        }
      
     },
 

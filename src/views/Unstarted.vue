@@ -74,7 +74,7 @@ export default {
                     this.loading = true;
                     this.$store.dispatch('saveAppState', ['serverConnected', `${this.address}:3000`])                    
                     setTimeout(() => {
-                        this.$router.push('Work')
+                        this.$router.push('Explorer')
                     }, 5000)
                 } else {
                     this.response.active=true;

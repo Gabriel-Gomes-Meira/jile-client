@@ -14,8 +14,8 @@ class Handler{
         })            
     }
     
-    renameWS(data, index){
-        this.wks[index].name = data.name
+    renameWS(name, index){
+        this.wks[index].name = name
     }
 
     deleteWS(index){
