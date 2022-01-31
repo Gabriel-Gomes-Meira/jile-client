@@ -88,13 +88,12 @@ export default new Vuex.Store({
 		},   
 		AppState:{
 			serverConnected:"",	
-			currenttheme:'darkblue',
-			toWorkspace:[],
+			currenttheme:'darkblue',			
 			FavoritesFolders:[],
 			snackbar:{
 				dialog:false,
 				message:''
-			}
+			},
 		}
 	},
 
@@ -154,8 +153,7 @@ export default new Vuex.Store({
 		WKs: state => state.Handler,
 		defaultSizes: state => state.defaultSizes,
 		theme: state => state.availbleThemes[state.AppState.currenttheme],		
-		server: state => state.AppState.serverConnected.length>0?state.AppState.serverConnected:false,
-		fromExplorer: state => state.AppState.toWorkspace,
+		server: state => state.AppState.serverConnected.length>0?state.AppState.serverConnected:false,		
 		FavoritesFolders: state => state.AppState.FavoritesFolders,
 		snack: state => state.AppState.snackbar
 	}

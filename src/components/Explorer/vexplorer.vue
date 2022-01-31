@@ -66,7 +66,7 @@
                 </v-card>
             </v-col>
 
-            <v-hover v-slot="{ hover }">
+            <!-- <v-hover v-slot="{ hover }">
                 <v-btn color="#f77f00" fab absolute bottom 
                 @click="$emit('performFavorite')"
                 left            
@@ -78,7 +78,7 @@
                     size="35"
                     v-text="isStared?'mdi-star-off-outline':'mdi-star-outline'"></v-icon>
                 </v-btn>                            
-            </v-hover>        
+            </v-hover>         -->
         </v-row>
 
     <!-- </v-container> -->
@@ -109,10 +109,10 @@ export default {
             type:String,
             default:'all'
         },
-        isStared:{
-            type:Boolean,
-            default:false
-        },
+        // isStared:{
+        //     type:Boolean,
+        //     default:false
+        // },
         dialogMode:{
             type:Boolean,
             default:false

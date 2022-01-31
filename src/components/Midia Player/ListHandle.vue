@@ -57,16 +57,14 @@
 		<player :Midia="wc.contents[0]" :loadingFiles="loadingFiles"
 		:settings="WKs.searchWC(boxid).settings" @drawerin="drawerList=true" @next="next" @prev="prev" @nextRandom="getRandom"
 		ref="player" :player_id="boxid"
-		@openExplorer="explorer.active = true"
+		@openExplorer="exploring = true"
 		></player>		
 
-		<!-- <explorer 		
-		:filter="explorer.filter"
-		:active="explorer.active"
-		:caminho="explorer.caminho"
-		@submit="receiveFiles"
-		@changePath="receivePath"
-		@close="explorer.active = false"/> -->
+		<explorer 
+		:show="exploring"
+		@close="exploring = false"
+		/>
+		
 
 	</div>
 </template>
@@ -78,7 +76,8 @@ import { mapGetters } from 'vuex';
 import Player from './PlayerFront.vue'
 import draggable from 'vuedraggable'
 import Trunquee from '../Trunquee.vue'
-// import Jialog from '../File System/JileDialog.vue'
+import dialog from '../Explorer/DialogExplorer.vue'
+
 
 
 
@@ -91,7 +90,7 @@ export default {
 		Player,
 		draggable,
 		Trunquee,
-		// Explorer:Jialog
+		explorer:dialog
 	},
 
 	data(){    
@@ -100,18 +99,14 @@ export default {
 			loadingFiles:false,
 			isDeleting:false,   
 			willDeletes:[],
-			drawerList:false,
-			// explorer:{
-			// 	active:false,
-			// 	filter:['.mp4', '.mkv', '.mp3', '.m4a'],
-			// 	caminho: '/'
-			// }
+			drawerList:false,	
+			exploring:false,		
 		}
 	},
 
 	computed:{
 		...mapGetters([		
-			'WKs'	
+			'WKs', 'interComunication'
 		]),
 
 		wc(){
@@ -251,14 +246,17 @@ export default {
 				if(element.name == this.wc.contents[0].name) {
 					return true
 				}
-			})
-			
+			})			
 		},
-		
 
-		// função pegar playlist
+		// chamar o explorer
+		callExplorer(){						
+		},		
 	},
-
+	
+	created(){
+		this.ListMask = this.wc.contents
+	}
 	
 }
 </script>

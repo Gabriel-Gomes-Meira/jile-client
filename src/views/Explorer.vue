@@ -66,9 +66,9 @@
                     :isloading="isloading"
                     @updateSelection="updateSelection"
                     :filter="filter"
-                    :isStared="isFavorite"
-                    @performFavorite="performFavorite"
                     /> 
+                    <!-- :isStared="isFavorite"
+                    @performFavorite="performFavorite" -->
                     <!-- v-show="!hasSelected" -->                                        
                 </v-tab-item>
 
