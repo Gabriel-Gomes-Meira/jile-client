@@ -4,8 +4,7 @@
         <v-app-bar        
         dense class="elevation-0 l3"
         @contextmenu="show"
-        >
-        <!-- :color="selectedItems>0?'black':'l3'" -->
+        >        
             <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
             <v-tabs
             optional            
@@ -57,12 +56,8 @@
                 <v-icon>mdi-folder-star-multiple</v-icon>
             </v-btn>
 
-            <!-- <v-btn icon @click="$emit('submit')"
-            style="z-index: 15;">
-                <v-icon>mdi-arrow-up-bold-box-outline</v-icon>
-            </v-btn> -->
-            
-            <!-- <v-toolbar-title class="ml-6">
+            <!-- 
+                <v-toolbar-title class="ml-6">
                 {{selectedItems>0?
                 `${selectedItems} mídias selecionadas...`
                 :Title}}
@@ -193,13 +188,13 @@ import menu from "./Menutab.vue"
 export default {
     name:"Explorerlayout",
 
-    props:['Title', 'server', 'havepast', 'havedest', 'SelectedTab'],
+    props:['Title', 'server', 'havepast', 'havedest', 'SelectedTab', 'Folders'],
 
     data(){
         return{
             drawer:false,
             tree:[],
-            Folders:[],
+            // Folders:[],
             favoriteDrawer:false,
             themes:[
                 {name:'gray', maincolor:'#4A6471'},
@@ -252,11 +247,11 @@ export default {
             })
         },    
 
-        getDisks(){
-            axios.get(`${this.address}disks/`).then((response) =>{                
-                this.Folders = response.data
-            })
-        },
+        // getDisks(){
+        //     axios.get(`${this.address}disks/`).then((response) =>{                
+        //         this.Folders = response.data
+        //     })
+        // },
 
         getChilds(item) {            
             axios.get(`${this.address}?path=${item.path}`)
@@ -310,11 +305,11 @@ export default {
         });                              
     },
 
-    mounted(){   
-        if(this.server){
-            this.getDisks();                      
-        }     
-    }
+    // mounted(){   
+    //     if(this.server){
+    //         this.getDisks();                      
+    //     }     
+    // }
 }
 </script>
 

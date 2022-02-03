@@ -1,11 +1,11 @@
 <template>
     <v-app
     background-color="primary"
-    >   
-        <!-- :selectedItems="selectedItems.length" -->
+    >           
         <layout 
         :Title="'Jile Client'"
         :server="server"
+        :Folders="Disks"
         @open="setItems"          
         :havepast="history.length>0"
         @back="topast"
@@ -64,9 +64,8 @@
                     @open="getChilds"
                     @submit="deliverToWork"
                     :isloading="isloading"
-                    @updateSelection="updateSelection"
                     :filter="filter"
-                    /> 
+                    />                     
                     <!-- :isStared="isFavorite"
                     @performFavorite="performFavorite" -->
                     <!-- v-show="!hasSelected" -->                                        
@@ -100,8 +99,9 @@ export default {
     data: () => ({                 
         history:[],
         future:[],
+        Disks:[],
         isloading:false,
-        selectedItems:[],
+        
         SelectedWS:undefined,
         filter:'all',
 
@@ -192,26 +192,23 @@ export default {
                 })
                 .catch(error => {                                    
             });            
-        },  
-        
-        updateSelection(arr){
-            this.selectedItems = arr;
         },
+
+        getDisks(){
+            axios.get(`http://${this.server}/disks/`).then((response) =>{                
+                this.Disks = response.data
+                this.lastOpenFolder.children = response.data
+            })
+        },          
         
         deliverToWork(content){
-            
-            // Não dialog
+                        
             this.WKs.createWS('Workspace '+
                                 this.WKs.size)
             var WC = this.WKs.createWC(this.WKs.size-1,
                 types.default.processors[content.extension])
 
-            this.WKs.setContents(WC, [content])
-            
-            //in dialog
-            // {
-                // ...
-            // }
+            this.WKs.setContents(WC, [content])                        
 
             this.SelectedWS = this.WKs.size-1
         },
@@ -251,7 +248,10 @@ export default {
         }              
     },
 
-    mounted(){        
+    mounted(){   
+        if(this.server){
+            this.getDisks();                      
+        }     
     }
 }
 </script>

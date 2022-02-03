@@ -62,7 +62,9 @@
 
 		<explorer 
 		:show="exploring"
+		:filter="'Player'"
 		@close="exploring = false"
+		@submit="receiveFiles"
 		/>
 		
 
@@ -163,10 +165,10 @@ export default {
 			this.wc.contents = this.ListMask = arg;
 		},
 
-		receivePath(arg){
-			console.log(arg.length)
-			// this.explorer.caminho = arg;
-		},
+		// receivePath(arg){
+		// 	console.log(arg.length)
+		// 	// this.explorer.caminho = arg;
+		// },
 
 		// Metodos executados no ListHandle, porém chamados no Player
 		next(){  
@@ -177,7 +179,7 @@ export default {
 				} else { this.selected++ }
 				
 				this.$nextTick(() => {
-					this.WKs.searchWC(this.boxid).contentsPresets.currentTime = 0;
+					this.WKs.searchWC(this.boxid).settings.currentTime = 0;
 				})
 			}								
 		},

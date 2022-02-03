@@ -1,11 +1,12 @@
 <template>
     <!-- <v-container fluid fill-height
     class="l1"> -->
-        <v-row class="fill-height pb-10 justify-center">
+        <v-row class="fill-height justify-center pb-10"
+         :class="!dialogMode?'':'pa-0 ma-0'">
             <v-col cols="12" class="pb-10">
-                <v-card height="88vh"
+                <v-card :height="!dialogMode?'88vh':'70vh'"
                 class="l5 pa-1" elevation="0">
-                    <v-card height="87vh" elevation="0"
+                    <v-card :height="!dialogMode?'87vh':'69vh'" elevation="0"
                     class="i1 Scrollable ">  
 
                     <v-container fill-height v-show="items.length==0">
@@ -20,7 +21,7 @@
                     
                     <v-item-group :multiple="dialogMode" v-model="selectedItems" v-show="items.length>0"
                     @change="(arr) => $emit('updateSelection', arr)">
-                        <v-container fluid class="mb-8">
+                        <v-container fluid :class="!dialogMode?'mb-8':''">
                             <v-slide-x-transition>
                             <v-row  v-show="!isloading">  
                                 <v-col :cols="cols" v-for="f in filtered" :key="f.id"
@@ -31,7 +32,8 @@
                                     class="d-flex align-center justify-center pa-0 rounded-b-0"
                                     v-if="f.children"
                                     >
-                                        <v-icon size="80">mdi-folder</v-icon>
+                                        <v-icon size="80"
+                                        v-text="!f.disk?'mdi-folder':'mdi-harddisk'"></v-icon>
                                     </v-card> 
                                     
                                     <v-item v-slot="{ active, toggle }" v-else
@@ -121,13 +123,14 @@ export default {
 
     data: () => ({
         selectedItems:0,  
-        types:types.default.extensions
+        types:types.default.extensions,
+        processors:types.default.processors
     }),
 
     computed:{
         filtered(){
             return this.items.filter((element) => {
-                return element.children || this.filter == 'all' || this.filter == this.types[element.extension]
+                return element.children || this.filter == 'all' || this.filter == this.types[element.extension] || this.filter == this.processors[element.extension]
             })
         }
     },
