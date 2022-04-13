@@ -3,7 +3,7 @@
   <dnd-grid-container :layout.sync="WK.layout"
   :margin="4"  
   :maxRowCount="114"
-  class="l1"
+  class="l1"  
   :cellSize="{
     h:2,
     w:3
@@ -16,7 +16,7 @@
     @maybeResize="handleMinimun">
     </window-card>
           
-  </dnd-grid-container>
+</dnd-grid-container>
 
 </template>
 
@@ -62,5 +62,7 @@ export default {
   .dnd-grid-box.placeholder{
     border:1px dashed rgb(255, 255, 255)!important;
   }
+
+  
   
 </style>

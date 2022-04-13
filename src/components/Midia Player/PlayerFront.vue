@@ -1,13 +1,13 @@
 <template>
     
-    <div class="player-container"    
-    @mouseenter="showControls" 
-    @mouseout="showControls"
-	
-    @contextmenu="showMenu">
+    <div class="player-container"    		
+    @contextmenu="showMenu"
+	@mouseenter="showControls(true)"
+	@mouseleave="showControls(false)">
 
       <div class="aside-menu" :id="'v-menufarea_'+player_id" v-if="fullscreenEnable"></div>
       
+	  
       <v-row :class="hidingControls?'player-title hide':'player-title'">
         <v-col cols="3">
             <v-btn class="mr-2"
@@ -33,7 +33,7 @@
         </v-col>
       </v-row>
 
-		<!-- Reprodutor de Mídia Start -->
+		<!-- Reprodutor de Mídia Start -->		
 		<v-row class="player-row pb-0"
 		>
 			
@@ -60,7 +60,7 @@
 		</v-row>
 		<!-- Reprodutor de Mídia End -->
 
-      <v-row class="controls-row px-5 pb-6"              
+      <v-row class="controls-row px-5 pb-6"   
       :class="hidingControls?'hide':''">        
         <v-col cols="12" class="progress">          
           <v-slider v-model="progressBar" :step="1" :disabled="Midia||loadingFiles?false:true"
@@ -71,8 +71,7 @@
             <template v-slot:thumb-label="{ value }">
               {{ new Date(value * 1000).toISOString().substr(11, 8) }}
             </template>
-          </v-slider> 
-                   
+          </v-slider>                    
         </v-col>
 
         <v-col class="bottom-controls d-flex align-content-center"
@@ -105,7 +104,7 @@
             outlined color="l5" small
             data-title="Mute (m)"            
             @click="toggleMute" :disabled="Midia||loadingFiles?false:true"
-            @mouseover="expandVolume" 
+            @mouseover="expandVolume" 			
             >
               <v-icon>{{settings.volumeState}}</v-icon>
             </v-btn>            
@@ -223,11 +222,11 @@ export default {
 		PlayerBack
 	},
 
-	computed:{
-		...mapGetters([
-			// 'settings'
-		])
-	},	
+	// computed:{
+	// 	...mapGetters([
+	// 		// 'settings'
+	// 	])
+	// },	
 	
 	// updated(){						
 	// 	this.$store.dispatch('saveContent');
@@ -238,9 +237,8 @@ export default {
 	// },
 
     mounted(){ 
-		   				
-      	document.addEventListener('keydown', this.keyboardShortcuts); 					
-    },
+      	document.addEventListener('keydown', this.keyboardShortcuts);		
+	},
 
     methods:{
 
@@ -269,7 +267,7 @@ export default {
 				if(this.player.readyState) {
 					clearInterval(inter);
 				}
-			}, 100);							
+			}, 100);				
 
 		},				
 
@@ -390,19 +388,20 @@ export default {
 			} 
 		},
 
-		// Esconder/mostrar controls
-		showControls() {      
-			if (this.player.paused || !this.Midia) {
+		// Esconder/mostrar controls, parametro indica se a interação é de entrada ou não
+		showControls(isEntering) {      
+			if (this.player.paused || !this.Midia || isEntering) {
 				this.hidingControls = false;
 				return;
-			}
-					
-			this.hidingControls=!this.hidingControls; 
-			if(!this.hidingControls){
+			
+			} else {
 				setTimeout(()=>{
-					this.hidingControls = true;
-				},3000)
-			}       
+					//validando apenas se o hidingControls nesse momento está como falso ou não
+					if(!this.hidingControls){
+						this.hidingControls = true;
+					}
+				},3000)	
+			}			
 		},
 
 		// Tratamento de keyboard
@@ -417,12 +416,10 @@ export default {
 					father.togglePlay();
 					
 					if (father.player.paused) {
-						father.showControls();
+						father.showControls(true);
 
-					} else {
-						setTimeout(() => {
-						father.showControls();
-						}, 2000);
+					} else {						
+						father.showControls(false);
 					}
 				},
 				KeyK(father){
@@ -492,6 +489,10 @@ export default {
 			this.$nextTick(() => {
 				this.popup.active = true
 			})
+		},
+
+		eventTest(param){
+			console.log(param);
 		}
     },    
 }

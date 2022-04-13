@@ -14,6 +14,7 @@
         @clearDest="future = []"
         @tabchanged="tabchanged"
         :SelectedTab="SelectedWS"
+        @performFavorite="performFavorite"
         />                
            
         <v-container fluid fill-height
@@ -54,6 +55,7 @@
 
             <v-tabs-items v-model="SelectedTab"
             class="l1"
+            :class="SelectedTab?'Scrollablex':''"
             style="width: 100vw"
             >
                 <v-tab-item :value="0"
@@ -67,7 +69,7 @@
                     :filter="filter"
                     />                     
                     <!-- :isStared="isFavorite"
-                    @performFavorite="performFavorite" -->
+                     -->
                     <!-- v-show="!hasSelected" -->                                        
                 </v-tab-item>
 
@@ -75,23 +77,36 @@
                 v-for="(WK, index) in WKs.wks"
                 :key="index"
                 :value="index+1"
-                class="Contentable">
+                class="Contentable "
+                >
+                <!-- @contextmenu.prevent="showMenuWorkSpace" -->
                         <desk 
                         class="Background"
+                        
                         :WK="WK" 
                         @closeWC="(arg) => WKs.deleteWC(WK, arg)" />                                        
-                </v-tab-item>      
+                </v-tab-item>
+
+                <!-- <v-tab-item :value="1001">
+                    
+                    <ProtospaceVue />                              
+                                  
+                </v-tab-item>       -->
             </v-tabs-items>                
+
+            
         </v-container>
     </v-app>
 </template>
 
 <script>
+import ProtospaceVue from "../components/WorkSpace/Protospace.vue"
 import ExplorerLayot from "../components/Explorer"
 import vexplorer from "../components/Explorer/vexplorer.vue"
 import Base from "../components/WorkSpace/Space.vue"
 import {mapGetters} from "vuex"
 import axios from "axios";
+
 import * as types from "../components/Types"
 
 export default {
@@ -100,11 +115,14 @@ export default {
         history:[],
         future:[],
         Disks:[],
-        isloading:false,
-        
+        isloading:false,        
         SelectedWS:undefined,
         filter:'all',
-
+        menu:{
+            active:false,
+            x:0,
+            y:0
+        },
         bottom:[
             {
                 type:"all",
@@ -133,7 +151,8 @@ export default {
     components:{
         layout:ExplorerLayot,
         explorer:vexplorer,
-        desk:Base
+        desk:Base,     
+        ProtospaceVue   
     },    
 
     computed:{
@@ -184,6 +203,14 @@ export default {
                 .then(response => {      
                     setTimeout(() => {
                         obj.children = response.data
+                        obj.children.sort((a,b)=>{                            
+                            
+                            if(!a.children && !b.children){
+                                return this.intrisictOrder(a, b);
+                            } else {
+                                return 0             
+                            }            
+                        })
                         this.setItems(obj)
                     }, 500);              
                     setTimeout(() => {                        
@@ -192,6 +219,38 @@ export default {
                 })
                 .catch(error => {                                    
             });            
+        },
+
+        intrisictOrder(a, b){
+            var name1 = a.name.substring(0,a.name.lastIndexOf(a.extension))                                                                
+            var name2 = b.name.substring(0,b.name.lastIndexOf(b.extension)) 
+            
+            if(name1.length>=name2.length){                
+                for (let index = 0; index < name1.length; index++) {                    
+
+                    if(name1.charAt(index) > name2.charAt(index)){
+                        return 1;
+                    } else if (name2.length > name1.length && name1.charAt(index) < name2.charAt(index) ) {
+                        return -1;
+                    } 
+                }
+            } else {
+                // .includes() diferenciado, avalio se as strings são bem parecidas
+                var countEquals = 0;
+                for (let index = 0; index < name2.length; index++) {                    
+
+                    if(name2.charAt(index) == name1.charAt(index)) {
+                        countEquals ++                        
+                    }                    
+                }
+
+                if(countEquals*100/name2.length > 80){
+                    return -1
+                }
+
+            }
+
+            return 0;
         },
 
         getDisks(){
@@ -240,6 +299,7 @@ export default {
             this.SelectedWS = index                      
         },
         
+        
     },
 
     created(){
@@ -257,17 +317,37 @@ export default {
 </script>
 
 <style>
-.Background{    
-    overflow: hidden;
-    height:90vh;
-    width: 100vw;    
-  }
-  .Contentable{
-      transition: 1s;
-  }
-  .explorer{
-      transition: 1s;
-  }
+    .Background{    
+        max-width: 1vw!important;
+        height: inherit;    
+    }
+    
+    .Contentable{
+        height:90vh;     
+        min-width: 1000vw;   
+        transition: 1s;
+    }
+    .explorer{
+        transition: 1s;      
+    }
+
+    .Scrollablex{
+        overflow-y:hidden;
+        overflow-x: scroll;
+    }
+    .Scrollablex::-webkit-scrollbar{        
+        width: 8px;
+    }
+    .Scrollablex::-webkit-scrollbar-track{
+        margin-top: 50px;
+        background-color: #3b3b3c18;
+        border-radius: 0px;
+    }
+    .Scrollablex::-webkit-scrollbar-thumb{
+        background: #28282ce2;
+        border: solid #74758400;
+        border-radius: 2px;
+    }
 </style>
 
 

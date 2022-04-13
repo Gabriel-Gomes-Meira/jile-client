@@ -16,21 +16,44 @@
 
                     <v-btn icon @click="deliverToWork"
                     style="z-index: 15;"
-                    v-show="selectedItems.length>0">
+                    v-show="selectedItems.length>0 && !isSaving">
                         <v-icon>mdi-arrow-up-bold-box-outline</v-icon>
                     </v-btn>
+
+                    <v-btn icon @click="performSelectAll"
+                    style="z-index: 15;"
+                    >
+                        <v-icon v-text="'                    mdi-select-multiple'" />
+                    </v-btn>
+
+                    <v-btn icon @click="deliverToServer"
+                    style="z-index: 15;"
+                    color="primary"
+                    :disabled="NewFileName.length==0?true:false"
+                    v-show="selectedItems.length>0 && isSaving">
+                        <v-icon>mdi-package-down</v-icon>
+                    </v-btn>
+                    
+                    <v-text-field
+                    class="mt-6"
+                    dense
+                    v-show="selectedItems.length>0 && isSaving"
+                    v-model="NewFileName"
+                    outlined
+                    label="Nome do novo Arquivo"
+                    ></v-text-field>
 
                     <v-spacer></v-spacer>
                     <v-btn icon 
                     :disabled="!history.length>0"
-                    @click="$emit('back')"
+                    @click="topast"
                     v-show="selectedItems==0">
                         <v-icon>mdi-arrow-left</v-icon>
                     </v-btn>
 
                     <v-btn icon 
                     :disabled="!future.length>0"
-                    @click="$emit('front')"
+                    @click="todest"
                     v-show="selectedItems.length==0">
                         <v-icon>mdi-arrow-right</v-icon>
                     </v-btn>
@@ -71,9 +94,41 @@
                     :filter="filter"
                     :dialogMode="true"
                     :cols="cols"
+                    :folderisItem="isSaving"
+                    ref="explorer"
                     />     
                 </v-row>         
-            </v-container>            
+            </v-container>
+
+            <v-navigation-drawer v-model="favoriteDrawer"
+            absolute temporary   
+            right
+            width="auto"
+            class="l3">
+                <v-list nav
+                dense
+                active-class="white--text text--accent-4">   
+                    <!-- <v-list-item
+                    @click="$emit('performFavorite')">
+                        <v-list-item-icon >
+                            <v-icon
+                            v-text="'mdi-plus'"/>                        
+                        </v-list-item-icon>
+                        <v-list-item-title 
+                        v-text="'Adicionar aos Favoritos'" />
+                    </v-list-item>          -->
+
+                    <v-list-item v-for="folder in FavoritesFolders" :key="'star_'+folder.name"
+                    @click="performOpen(folder)">
+                        <v-list-item-icon >
+                            <v-icon
+                            v-text="'mdi-folder-open'"/>                        
+                        </v-list-item-icon>
+                        <v-list-item-title 
+                        v-text="folder.name" />
+                    </v-list-item>
+                </v-list>
+            </v-navigation-drawer>              
         </v-card>
     </v-dialog>
 </template>
@@ -85,7 +140,7 @@ import axios from "axios"
 
 export default {
     // name:'dialogexplorer'
-    props:['show', 'filter'],
+    props:['show', 'filter', 'isSaving'],
     data: () => ({
         cols:3,
         selectedItems:[],
@@ -93,6 +148,8 @@ export default {
         future:[],
         Disks:[],
         isloading:false,
+        NewFileName:"",
+        favoriteDrawer: false,
     }),
 
     components:{
@@ -101,7 +158,7 @@ export default {
 
     computed:{
         ...mapGetters([
-            'server', 'WKs'
+            'server', 'WKs', 'FavoritesFolders'
         ]),     
         lastOpenFolder:{
             get(){
@@ -134,6 +191,14 @@ export default {
                 .then(response => {      
                     setTimeout(() => {
                         obj.children = response.data
+                        obj.children.sort((a,b)=>{                            
+                            
+                            if(!a.children && !b.children){
+                                return this.intrisictOrder(a, b);
+                            } else {
+                                return 0             
+                            }            
+                        })
                         this.setItems(obj)
                     }, 500);              
                     setTimeout(() => {                        
@@ -143,6 +208,35 @@ export default {
                 .catch(error => {                                    
             });            
         }, 
+
+        intrisictOrder(a, b){
+            var name1 = a.name.substring(0,a.name.lastIndexOf(a.extension))                                                                
+            var name2 = b.name.substring(0,b.name.lastIndexOf(b.extension)) 
+            
+            if(name1.length>=name2.length){                
+                if(name1>name2){
+                    return 1
+                } else if(name1.length<name2){
+                    return -1
+                }
+            } else {
+                // .includes() diferenciado, avalio se as strings são bem parecidas
+                var countEquals = 0;
+                for (let index = 0; index < name2.length; index++) {                    
+
+                    if(name2.charAt(index) == name1.charAt(index)) {
+                        countEquals ++                        
+                    }                    
+                }
+
+                if(countEquals*100/name2.length > 80){
+                    return -1
+                }
+
+            }
+
+            return 0;
+        },
 
         getDisks(){
             axios.get(`http://${this.server}/disks/`).then((response) =>{                
@@ -174,6 +268,16 @@ export default {
         deliverToWork(){
             this.$emit('submit', this.selectedItems)
             this.$emit('close')
+        },
+
+        deliverToServer(){
+            this.$emit('save', [this.selectedItems[0], this.NewFileName])
+            this.$emit('close')
+        },
+
+        performSelectAll(){
+            console.log(this.$refs.explorer)
+            this.$refs.explorer.selectAllItems()
         }
     },
 

@@ -4,7 +4,15 @@
     
 		<image-viewer :List="wc.contents" :ref="'viewer_'+boxid"
 		 :viewer_id="boxid"
-		 :loadingFiles="loadingFiles"></image-viewer>		 
+		 :loadingFiles="loadingFiles" 
+		 @openExplorer="exploring = true"/>
+
+		<explorer 
+		:show="exploring"
+		:filter="'Image'"
+		@close="exploring = false"
+		@submit="receiveFiles"
+		/>
 							
     </div>
   
@@ -15,7 +23,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import ImageViewer from './ImageViewer.vue'
-
+import dialog from '../Explorer/DialogExplorer.vue'
 
 export default {
 	name: 'ImagesExplorer',
@@ -23,12 +31,14 @@ export default {
 	props:['boxid'],
 
 	components:{
-		ImageViewer
+		ImageViewer,
+		explorer:dialog
 	},
 
 	data(){    
 		return{        			 
 			loadingFiles:false,  
+			exploring:false,
 		}
 	},
 
@@ -47,6 +57,9 @@ export default {
 	},
   
   	methods:{		    									
+		receiveFiles(arg){
+			this.wc.contents = arg;
+		}
   	}
 }
 </script>

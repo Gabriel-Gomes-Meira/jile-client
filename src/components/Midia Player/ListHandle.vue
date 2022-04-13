@@ -1,7 +1,7 @@
 <template>
 
 	<div class="drop"     
-	:id="'player-container_'+boxid"			
+	:id="'player-container_'+boxid"
 	>
 
 		<v-navigation-drawer
@@ -143,12 +143,12 @@ export default {
 						// fazer remoção do inicio e adição ao final até o quem que eu desejo estar no inicio                
 						for (let index = wanted; index > 0; index--) {
 							this.wc.contents.push(this.wc.contents.shift())                    
-						}
+						}						
+						this.WKs.searchWC(this.boxid).settings.currentTime = 0;
 					} else {
 						//tratamento para escolher itens para se deletar            
 						this.willDeletes = value            
-					}
-										
+					}										
 				}        
 			}
 		},
@@ -162,7 +162,8 @@ export default {
 
 	methods:{	
 		receiveFiles(arg){
-			this.wc.contents = this.ListMask = arg;
+			this.wc.contents = arg;
+			Object.assign(this.ListMask, this.wc.contents)			
 		},
 
 		// receivePath(arg){
@@ -178,9 +179,9 @@ export default {
 					this.selected = 0      
 				} else { this.selected++ }
 				
-				this.$nextTick(() => {
+				// this.$nextTick(() => {
 					this.WKs.searchWC(this.boxid).settings.currentTime = 0;
-				})
+				// })
 			}								
 		},
 
@@ -257,7 +258,7 @@ export default {
 	},
 	
 	created(){
-		this.ListMask = this.wc.contents
+		Object.assign(this.ListMask, this.wc.contents)
 	}
 	
 }

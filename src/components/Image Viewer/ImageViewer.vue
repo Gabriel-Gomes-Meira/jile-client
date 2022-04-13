@@ -7,6 +7,13 @@
                 color="l4" small outlined
                 @click="$emit('openExplorer')">
                 <v-icon>mdi-folder-home-outline</v-icon>
+                </v-btn> 
+
+                <v-btn class="mr-2"
+                color="l4" small outlined
+                @click="dialog = true"
+                >
+                    <v-icon>mdi-presentation</v-icon>
                 </v-btn>                 
             </v-col>
 
@@ -21,8 +28,9 @@
         </v-row>
 
         
-
-        <v-carousel height="inherit" hide-delimiters @
+        
+        <v-carousel height="inherit" hide-delimiters
+        v-show="!dialog"
         v-model="seleIndex" :show-arrows="outZoom && controlsVisible" 
         @change="activingSlide('zoomer_'+viewer_id+'('+seleIndex+')')">
             <v-carousel-item v-if="List.length<=0 || loadingFiles">
@@ -30,7 +38,7 @@
                 color="backcard"
                 height="100%"
                 tile >
-                    <v-row 
+                    <v-row
                     class="fill-height d-flex flex-column"
                     align="center"
                     justify="center" v-if="!loadingFiles">                          
@@ -58,7 +66,7 @@
             </v-carousel-item>
         
             <v-carousel-item v-for="(image, index) in List" :key="index">                                  
-                    <v-zoomer style="width: 100%; height: 100%;" :ref="'zoomer_'+viewer_id+'('+index+')'">
+                    <v-zoomer style="width: 100%; height: 100%; padding: 10%" :ref="'zoomer_'+viewer_id+'('+index+')'">
                         <img @load="activingSlide('zoomer_'+viewer_id+'('+index+')')"               
                         :src="`http://${server}/files/?path=${image.path}`"
                         class="img-slide-zoomer">
@@ -104,6 +112,18 @@
                 </v-list-item-group>
             </v-list>		
         </v-menu>   
+        
+        <dialog-viewer 
+        :sele-index="seleIndex"
+        :controls-visible="controlsVisible"
+        :List="List"
+        :server="server"
+        :viewer_id="viewer_id"
+        :out-zoom="outZoom"
+        :active="dialog"
+        @close="dialog = false"
+        @load="activingSlide"
+        />
 
     </div>
 
@@ -112,7 +132,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import PaginaSwip from './PaginaSwip.vue';
-
+import DialogViewer from './DialogViewer.vue';
 
 export default {
     
@@ -124,12 +144,14 @@ export default {
             paginationVisible:true,  
             controlsVisible:false,
             popup:{ active:false, x:0, y:0},        
-            slideActive:{},                  
+            slideActive:{},    
+            dialog:false,              
         }
     },
 
     components:{
-       PaginaSwip
+       PaginaSwip,
+       DialogViewer
     },   
     
     computed:{

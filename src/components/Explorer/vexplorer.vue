@@ -20,7 +20,8 @@
                     
                     
                     <v-item-group :multiple="dialogMode" v-model="selectedItems" v-show="items.length>0"
-                    @change="(arr) => $emit('updateSelection', arr)">
+                    @change="(arr) => $emit('updateSelection', arr)"
+                    :max="folderisItem?0:items.length">
                         <v-container fluid :class="!dialogMode?'mb-8':''">
                             <v-slide-x-transition>
                             <v-row  v-show="!isloading">  
@@ -28,7 +29,9 @@
                                 style="height:100px" class="mt-2" >
                                     
                                     <v-card height="80px" outlined 
-                                    @click="$emit('open', f)"
+                                    @click="!folderisItem?$emit('open', f):selectFolder(f)"
+                                    @dblclick="!folderisItem?'':$emit('open', f)"
+                                    :color="folderisItem && selectedItems[0]==f?'primary':'backcard'"
                                     class="d-flex align-center justify-center pa-0 rounded-b-0"
                                     v-if="f.children"
                                     >
@@ -118,6 +121,10 @@ export default {
         dialogMode:{
             type:Boolean,
             default:false
+        },
+        folderisItem:{
+            type:Boolean,
+            default:false
         }
     },
 
@@ -132,11 +139,30 @@ export default {
             return this.items.filter((element) => {
                 return element.children || this.filter == 'all' || this.filter == this.types[element.extension] || this.filter == this.processors[element.extension]
             })
+        },
+        allSelectable(){
+            return this.filtered.filter((element) => {
+                return !element.children;
+            })
         }
     },
 
     methods:{
+        selectFolder(folder){
+            this.selectedItems = [];
+            this.selectedItems[0] = folder;
+            this.$emit('updateSelection', this.selectedItems)
+        },
         
+        selectAllItems(){                        
+
+            if(this.selectedItems != this.allSelectable){
+                this.selectedItems = this.allSelectable
+            } else {
+                this.selectedItems = []
+                this.$forceUpdate()
+            }
+        }
     },
 }
 </script>

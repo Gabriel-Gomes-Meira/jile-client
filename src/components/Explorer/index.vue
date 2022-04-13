@@ -1,32 +1,34 @@
 <template>
-    <div>
+    <div >
         
         <v-app-bar        
         dense class="elevation-0 l3"
         @contextmenu="show"
         >        
             <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-            <v-tabs
-            optional            
-            v-model="tabSelected"
-
-            align-with-title>
-                <v-tab 
-                v-for="Tab in WKs.wks"
-                :key="'tab_'+Tab.name">
-                    {{Tab.name}}
-                </v-tab>
-            </v-tabs>
+                <v-tabs
+                optional            
+                v-model="tabSelected"                
+                align-with-title>
+                    <v-tab 
+                    v-for="Tab in WKs.wks"
+                    :key="'tab_'+Tab.name"
+                    active-class="white--text">
+                        {{Tab.name}}
+                    </v-tab>                    
+                    <v-tabs-slider color="white"></v-tabs-slider>
+                </v-tabs>
             <v-spacer></v-spacer>
 
-            <v-btn icon disabled >
+            <v-btn icon disabled v-show="!(tabSelected || tabSelected == 0)">
               <v-icon>mdi-magnify</v-icon>
             </v-btn>
 
             <v-menu offset-y>
                 <template v-slot:activator="{on}">
                     <v-btn icon  
-                    v-on="on">
+                    v-on="on"
+                    v-show="!(tabSelected || tabSelected == 0)">
                     <v-icon>mdi-view-module</v-icon>
                     </v-btn>                
                 </template>
@@ -40,28 +42,30 @@
               
             <v-btn icon 
             :disabled="!havepast"
-            @click="$emit('back')">
+            @click="$emit('back')"
+            v-show="!(tabSelected || tabSelected == 0)">
                 <v-icon>mdi-arrow-left</v-icon>
             </v-btn>
 
             <v-btn icon 
             :disabled="!havedest"
-            @click="$emit('front')">
+            @click="$emit('front')"
+            v-show="!(tabSelected || tabSelected == 0)">
                 <v-icon>mdi-arrow-right</v-icon>
             </v-btn>
 
             <v-btn icon 
             @click="favoriteDrawer = !favoriteDrawer"
+            v-show="!(tabSelected || tabSelected == 0)"
             >
                 <v-icon>mdi-folder-star-multiple</v-icon>
             </v-btn>
+                        
 
-            <!-- 
-                <v-toolbar-title class="ml-6">
-                {{selectedItems>0?
-                `${selectedItems} mídias selecionadas...`
-                :Title}}
-            </v-toolbar-title>                                   -->
+            <menu-work 
+            @createCell="createCell"
+            v-show="(tabSelected || tabSelected == 0)"
+            />                                                                
             <v-toolbar-title v-text="Title" />
         </v-app-bar>
 
@@ -72,7 +76,17 @@
         class="l3">
             <v-list nav
             dense
-            active-class="white--text text--accent-4">            
+            active-class="white--text text--accent-4">   
+                <v-list-item
+                @click="$emit('performFavorite')">
+                    <v-list-item-icon >
+                        <v-icon
+                        v-text="'mdi-plus'"/>                        
+                    </v-list-item-icon>
+                    <v-list-item-title 
+                    v-text="'Adicionar aos Favoritos'" />
+                </v-list-item>         
+
                 <v-list-item v-for="folder in FavoritesFolders" :key="'star_'+folder.name"
                 @click="performOpen(folder)">
                     <v-list-item-icon >
@@ -182,7 +196,7 @@
 import { mapGetters } from 'vuex';
 import axios from "axios"
 import menu from "./Menutab.vue"
-
+import MenuWork from './MenuWork.vue';
 
 
 export default {
@@ -214,7 +228,8 @@ export default {
     },
 
     components:{ 
-        MenuTab :menu   
+        MenuTab :menu   ,
+        MenuWork
     },
 
     computed: {
@@ -246,12 +261,7 @@ export default {
                 }
             })
         },    
-
-        // getDisks(){
-        //     axios.get(`${this.address}disks/`).then((response) =>{                
-        //         this.Folders = response.data
-        //     })
-        // },
+        
 
         getChilds(item) {            
             axios.get(`${this.address}?path=${item.path}`)
@@ -292,6 +302,10 @@ export default {
 
         deleteWork(){
             this.WKs.deleteWS(this.tabSelected)
+        },
+
+        createCell(type){
+            this.WKs.createWC(this.tabSelected, type);
         }
      
     },

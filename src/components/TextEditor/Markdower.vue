@@ -30,19 +30,13 @@
 				editor.ui.registry.addMenuItem('open', {
 					icon:'document-properties',
 					text: 'Abrir',
-				//	onAction: function () {
-				//		dialog.active = true;
-				//		dialog.arg = null;
-				//	}
+					onAction: performOpen
 				});
 
 				editor.ui.registry.addMenuItem('save', {
 					icon:'save',
 					text: 'Salvar',
-					onAction: function () {			
-						//ignore os comentários abaixo até segunda ordem:			
-						//a ideia de salvar é bem simples: passa para o dialog o document, o usuario cria a pasta e/ou file desejado, seleciona, e salva, mas recebe um aviso de sobreposição antes, caso escolha um arquivo já existente. Em caso dele já ter nome, dá pra salvar por aqui mesmo. 
-					}
+					onAction: performSave
 				});
 				
 			},
@@ -57,28 +51,15 @@
 			v-model="document.content"
 		/>
 							
-		<!-- <open-dialog :active="dialog.active"
-		:document="dialog.arg"
-		@close="dialog.active=false"
-		@savedDocument="saved"
-		@openDocument="open"/> -->
+		<explorer
+		:show="dialog.active"
+		:filter="'Text'"
+		:isSaving="!dialog.opening"
+		@close="dialog.active = false"
+		@save="upDocument"
+		@submit="receiveFiles"
+		/>
 
-		<!-- <v-snackbar
-		top v-model="snack.active"
-		color="success">
-			{{snack.message}}
-			<template v-slot:action="{ attrs }">
-				<v-btn
-				color="white"
-				text
-				v-bind="attrs"
-				@click="snack.active = false"
-				>
-					<v-icon>mdi-close-circle-outline</v-icon>
-				</v-btn>
-			</template>
-
-		</v-snackbar> -->
 	</div>
      
     
@@ -88,7 +69,8 @@
 <script>
 
 import Editor from '@tinymce/tinymce-vue'
-// import OpenDialog from './OpenDialog.vue'
+import dialog from '../Explorer/DialogExplorer.vue'
+import axios from 'axios'
 import { mapGetters } from 'vuex';
 
 export default {
@@ -98,15 +80,15 @@ export default {
 
 	components: {
 		'editor': Editor,		
-		// OpenDialog
+		explorer:dialog
    	},
 
 	data(){
 		return {
-			// dialog:{
-			// 	active:false,
-			// 	arg:null
-			// },
+			dialog:{
+				active:false,	
+				opening:true
+			},
 			// snack:{
 			// 	message:'',
 			// 	active:false,
@@ -130,30 +112,51 @@ export default {
 	},
 
 	created(){
-		fetch(`http://${this.server}/files/?path=${this.wc.contents[0].path}`)
-		.then(resp => resp.text())
-		.then(text => {
-			this.document.content = text
-		})
+		if(this.wc.contents[0]){
+			this.setContent()
+		}
 		// this.$store.dispatch('loadMarkdower')
 		
 	},
 
 	methods:{
-		// saved(file){
-		// 	this.document.oldcontent = this.document.content
-		// 	this.document.id = file.id
-		// 	this.document.name = file.name
-		// 	this.snack.message = 'Salvo com sucesso!'
-		// 	this.snack.active = true
-		// }, 
+		
+		receiveFiles(arg){
+			this.wc.contents = arg;
+			this.setContent()
+		},
 
-		// open(file){
-		// 	this.document.oldcontent = file.content
-		// 	this.document.content = file.content
-		// 	this.document.name = file.name
-		// 	this.document.id = file.id			
-		// }
+		setContent(){
+			fetch(`http://${this.server}/files/?path=${this.wc.contents[0].path}`)
+			.then(resp => resp.text())
+			.then(text => {
+				this.document.content = text
+			})
+		},
+
+		performSave(){
+			this.dialog.active = true
+			this.dialog.opening = false
+		},
+
+		performOpen(){
+			this.dialog.active = true
+			this.dialog.opening = true
+		},
+
+		upDocument(data){
+			var headers = {
+				'Content-Type': 'application/json',	
+			}
+			axios.post(`http://${this.server}/save/`, {
+				filename:data[1],
+				address:data[0].path+"\\",
+				content:this.document.content
+			}, {headers: headers}).then((response) =>{
+				console.log(response)
+				this.$store.dispatch('saveWorkState');
+			})		
+		}
 	}
  }
  </script>
